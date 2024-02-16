@@ -164,8 +164,8 @@ This project is under the CC-BY-NC 4.0 license. See [LICENSE](LICENSE) for detai
 ```shell
 :~$ cd Desktop/notepad/vpn/
 :~$ sudo openvpn --config inesctec_202103.ovpn
-:~$ ssh ubuntu@10.610.140.231
-:~$ ssh -X 10.610.40.520
+:~$ ssh ubuntu@10.61.14.231
+:~$ ssh -X ssh -X 10.61.4.52
 ```
 <!--- cSpell:enable --->
 
