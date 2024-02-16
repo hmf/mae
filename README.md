@@ -221,3 +221,44 @@ n_gpu = 1
 * PIL
 * Matplotlib
 * pip3 install timm==0.4.5
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ mkdir checkpoints
+vscode ➜ /workspaces/mae (test_1) $ cd checkpoints/
+vscode ➜ /workspaces/mae/checkpoints (test_1) $ wget https://dl.fbaipublicfiles.com/mae/finetune/mae_finetuned_vit_base.pth
+--2024-02-16 11:06:03--  https://dl.fbaipublicfiles.com/mae/finetune/mae_finetuned_vit_base.pth
+Resolving dl.fbaipublicfiles.com (dl.fbaipublicfiles.com)... 18.154.41.12, 18.154.41.96, 18.154.41.57, ...
+Connecting to dl.fbaipublicfiles.com (dl.fbaipublicfiles.com)|18.154.41.12|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 346326087 (330M) [binary/octet-stream]
+Saving to: ‘mae_finetuned_vit_base.pth’
+
+mae_finetuned_vit_base.pth        100%[==========================================================>] 330.28M  29.3MB/s    in 12s     
+
+2024-02-16 11:06:16 (27.5 MB/s) - ‘mae_finetuned_vit_base.pth’ saved [346326087/346326087]
+vscode ➜ /workspaces/mae/checkpoints (test_1) $ cd ..
+
+
+vscode ➜ /workspaces/mae (test_1) $ mkdir data
+vscode ➜ /workspaces/mae (test_1) $ cd data/
+
+```
+<!--- cSpell:enable --->
+
+We need to sign-up and register at: http://image-net.org/download. The answer is sent via e-mail within 5 days of the request. 
+
+You have submitted a request at Fri Feb 16 03:29:35 2024. We are reviewing your request. When we approve your request, we will notify you by email. You should expect to hear from us in 5 work days.
+
+
+<!--- cSpell:disable --->
+imagenet_full_size-061417.tar.gz
+
+python main_finetune.py --eval --resume mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path ${IMAGENET_DIR}
+
+python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path ./data
+
+
+<!--- cSpell:enable --->
+
+
