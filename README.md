@@ -250,6 +250,23 @@ We need to sign-up and register at: http://image-net.org/download. The answer is
 
 You have submitted a request at Fri Feb 16 03:29:35 2024. We are reviewing your request. When we approve your request, we will notify you by email. You should expect to hear from us in 5 work days.
 
+1. [Tips and Tricks for Upgrading to PyTorch 2.0](https://towardsdatascience.com/tips-and-tricks-for-upgrading-to-pytorch-2-3127db1d1f3d)
+  1. https://pytorch.org/docs/stable/generated/torch.compile.html
+  1. [TorchDynamo](https://github.com/pytorch/torchdynamo/tree/0b8aaf340dad4777a080ef24bf09623f1aa6f3dd)
+  1. [FC Graph](https://pytorch.org/docs/stable/fx.html)
+  1. [TorchInductor](https://dev-discuss.pytorch.org/t/torchinductor-a-pytorch-native-compiler-with-define-by-run-ir-and-symbolic-shapes/747)
+  1. [Triton](https://github.com/openai/triton)
+  1. Learn from
+     1. [PyTorch documentation](https://pytorch.org/get-started/pytorch-2.0/#technology-overview)
+     1. [2022 PyTorch Conference](https://pytorch.org/get-started/pytorch-2.0/#technology-overview)
+     1. [TDS post](https://towardsdatascience.com/how-pytorch-2-0-accelerates-deep-learning-with-operator-fusion-and-cpu-gpu-code-generation-35132a85bd26)
+  1. PyTorch Lightening
+  1. "One of the nice things about PyTorch 2 is that it is fully backward compatible."
+  1. Example of a ViT using [TIMM](https://pypi.org/project/timm/) and [Automatic mixed precision (AMP)](https://pytorch.org/docs/stable/amp.html)
+     1. Use of AMP important for speedup (nearly 50% better)
+  1. [Minifier](https://pytorch.org/functorch/stable/notebooks/minifier.html)
+
+
 
 <!--- cSpell:disable --->
 imagenet_full_size-061417.tar.gz
@@ -258,7 +275,35 @@ python main_finetune.py --eval --resume mae_finetuned_vit_base.pth --model vit_b
 
 python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path ./data
 
+```shell
+vscode ➜ /workspaces/mae (test_1) $ python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path ./data
+
+```
 
 <!--- cSpell:enable --->
 
 
+1. [ModuleNotFoundError: No module named 'torch._six'](https://github.com/microsoft/DeepSpeed/issues/2845)
+   1. Convert from ```from torch._six import inf```
+   1. to `from torch import inf`
+1. `FileNotFoundError: [Errno 2] No such file or directory: './data/train'`
+1. `FileNotFoundError: Couldn't find any class folder in ./data/train`
+
+
+
+1. [ImageNet sample images (minimal, not split)](https://github.com/EliSchwartz/imagenet-sample-images)
+1. [HuggingFace ImageNet 1k](https://huggingface.co/datasets/imagenet-1k)
+
+1. https://paperswithcode.com/dataset/imagenet-50-samples-per-class
+   1. https://github.com/cvjena/deic/tree/master/datasets/imagenet
+      1. https://www.kaggle.com/c/imagenet-object-localization-challenge/data
+
+
+<!--- cSpell:disable --->
+
+```shell
+vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/train
+vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/test
+```
+
+<!--- cSpell:enable --->
