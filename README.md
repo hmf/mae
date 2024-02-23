@@ -364,7 +364,6 @@ scp train_images_4.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
 
 <!--- cSpell:disable --->
 ```shell
-
 ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ wget https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
 --2024-02-23 09:57:26--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
 Resolving huggingface.co (huggingface.co)... 54.192.95.26, 54.192.95.79, 54.192.95.70, ...
@@ -383,6 +382,37 @@ wget http://user:password@host/path
 
 wget --user hmf --ask-password https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
 
+Space in front of command not to save in history
+
  wget --user hmf --password "Sw9?yd=6qmCq$$ https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
 
+Space in front of command not to save in history
+
  wget --user=hmf --password="Sw9?yd=6qmCq$$ https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+
+Need single quots due to double quotes in password
+ wget --user=hmf --password='"Sw9?yd=6qmCq$$' https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+
+ https://serverfault.com/questions/150282/escape-a-in-the-password-parameter-of-wget
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=hmf --password='"Sw9?yd=6qmCq$$' https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
+--2024-02-23 11:24:13--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
+Resolving huggingface.co (huggingface.co)... 54.192.95.21, 54.192.95.79, 54.192.95.26, ...
+Connecting to huggingface.co (huggingface.co)|54.192.95.21|:443... connected.
+HTTP request sent, awaiting response... 401 Unauthorized
+Unknown authentication scheme.
+
+Username/Password Authentication Failed.
+```
+<!--- cSpell:enable --->
+
+
+https://discuss.huggingface.co/t/private-data-and-wget/35115/2
+wget --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/GeneralAwareness/Various/resolve/main/file.zip
+https://huggingface.co/settings/tokens
+
+Space in front of command not to save in history
+
+ wget --user=hmf --password='"Sw9?yd=6qmCq$$' --header="Authorization: Bearer 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" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
