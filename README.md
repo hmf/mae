@@ -300,52 +300,10 @@ vscode ➜ /workspaces/mae (test_1) $ python main_finetune.py --eval --resume ch
 
 
 <!--- cSpell:disable --->
+
 ```shell
 vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/train
 vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/test
 ```
 
 <!--- cSpell:enable --->
-
-Go to local source with data:
-
-<!--- cSpell:disable --->
-```shell
-ubuntu@cese-produtech3r:~$ cd /mnt/data02/data/src
-ubuntu@cese-produtech3r:/mnt/data02/data/src$ 
-ubuntu@cese-produtech3r:/mnt/data02/data/src$ mkdir imagenet-1k
-```
-<!--- cSpell:enable --->
-
-Copy source data from the local to the remote node (these files are large so may take a while):
-
-<!--- cSpell:disable --->
-```shell
-hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k/
-hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ 
-hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ scp *.py ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-classes.py                                                                                                                                        100%   45KB 761.6KB/s   00:00    
-imagenet-1k.py                                                                                                                                    100% 4721   130.4KB/s   00:00    
-h
-mf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ scp gitattributes ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-gitattributes                                                                                                                                     100% 1566    52.0KB/s   00:00    
-hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ scp README.md ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-README.md                                                                                                                                         100%   83KB   1.1MB/s   00:00    
-
-```
-<!--- cSpell:enable --->
-
-<!-- https://linuxize.com/post/how-to-use-scp-command-to-securely-transfer-files/ -->
-
-scp file.txt remote_username@10.10.0.2:/remote/directory
-
-scp *.py ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-
-scp gitattributes ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-
-scp README.md ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-
-scp test*.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-
-
-
