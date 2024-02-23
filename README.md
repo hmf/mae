@@ -293,17 +293,31 @@ vscode ➜ /workspaces/mae (test_1) $ python main_finetune.py --eval --resume ch
 
 1. [ImageNet sample images (minimal, not split)](https://github.com/EliSchwartz/imagenet-sample-images)
 1. [HuggingFace ImageNet 1k](https://huggingface.co/datasets/imagenet-1k)
-
-1. https://paperswithcode.com/dataset/imagenet-50-samples-per-class
-   1. https://github.com/cvjena/deic/tree/master/datasets/imagenet
-      1. https://www.kaggle.com/c/imagenet-object-localization-challenge/data
+   1. [Files and versions](https://huggingface.co/datasets/imagenet-1k/tree/main)
+      1. Entre data directory 
+      1. Download data
+         1. [test_images.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/test_images.tar.gz?download=true)
+         1. [val_images.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/val_images.tar.gz?download=true)
+         1. [train_images_0.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true)
+         1. [train_images_1.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true)
+         1. [train_images_2.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz?download=true)
+         1. [train_images_3.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz?download=true)
+         1. [train_images_4.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz?download=true)
 
 
 <!--- cSpell:disable --->
-
 ```shell
 vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/train
 vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/test
+vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/val
 ```
-
 <!--- cSpell:enable --->
+
+Make sure you can launch the dev container (Docker). 
+
+<!--- cSpell:disable --->
+```shell
+cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k/
+```
+<!--- cSpell:enable --->
+
