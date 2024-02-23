@@ -315,9 +315,74 @@ vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/val
 
 Make sure you can launch the dev container (Docker). 
 
+Go to local source with data:
+
 <!--- cSpell:disable --->
 ```shell
-cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k/
+ubuntu@cese-produtech3r:~$ cd /mnt/data02/data/src
+ubuntu@cese-produtech3r:/mnt/data02/data/src$ 
+ubuntu@cese-produtech3r:/mnt/data02/data/src$ mkdir imagenet-1k
 ```
 <!--- cSpell:enable --->
 
+Copy source data from the local to the remote node (these files are large so may take a while, may be vest todownload dirctly via curl or wget):
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k/
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ scp *.py ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+classes.py                                                                                                                                        100%   45KB 761.6KB/s   00:00    
+imagenet-1k.py                                                                                                                                    100% 4721   130.4KB/s   00:00    
+h
+mf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ scp gitattributes ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+gitattributes                                                                                                                                     100% 1566    52.0KB/s   00:00    
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ scp README.md ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+README.md                                                                                                                                         100%   83KB   1.1MB/s   00:00    
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ scp test*.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+test_images.tar.gz                                                                                                                                100%   13GB   9.0MB/s   23:55    
+```
+<!--- cSpell:enable --->
+
+<!-- https://linuxize.com/post/how-to-use-scp-command-to-securely-transfer-files/ -->
+
+
+scp file.txt remote_username@10.10.0.2:/remote/directory
+scp *.py ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+scp gitattributes ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+scp README.md ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+scp test*.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+
+scp val*.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+
+scp train_images_0.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+scp train_images_1.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+scp train_images_2.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+scp train_images_3.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+scp train_images_4.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+
+
+<!--- cSpell:disable --->
+```shell
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ wget https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+--2024-02-23 09:57:26--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+Resolving huggingface.co (huggingface.co)... 54.192.95.26, 54.192.95.79, 54.192.95.70, ...
+Connecting to huggingface.co (huggingface.co)|54.192.95.26|:443... connected.
+HTTP request sent, awaiting response... 401 Unauthorized
+
+Username/Password Authentication Failed.
+```
+<!--- cSpell:enable --->
+
+
+https://askubuntu.com/questions/29079/how-do-i-provide-a-username-and-password-to-wget
+wget --user user --password pass url
+wget --user user --ask-password url
+wget http://user:password@host/path
+
+wget --user hmf --ask-password https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+
+ wget --user hmf --password "Sw9?yd=6qmCq$$ https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+
+ wget --user=hmf --password="Sw9?yd=6qmCq$$ https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
