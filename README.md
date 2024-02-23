@@ -329,18 +329,26 @@ Copy source data from the local to the remote node (these files are large so may
 
 <!--- cSpell:disable --->
 ```shell
-hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k/
-hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ 
-hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ scp *.py ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+usr@node:~$ cd /mnt/ssd2/usr/datasets/computer_vision/imagenet-1k/
+usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ 
+usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp *.py ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
 classes.py                                                                                                                                        100%   45KB 761.6KB/s   00:00    
 imagenet-1k.py                                                                                                                                    100% 4721   130.4KB/s   00:00    
 h
-mf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ scp gitattributes ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+mf@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp gitattributes ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
 gitattributes                                                                                                                                     100% 1566    52.0KB/s   00:00    
-hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ scp README.md ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp README.md ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
 README.md                                                                                                                                         100%   83KB   1.1MB/s   00:00    
-hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ scp test*.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp test*.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
 test_images.tar.gz                                                                                                                                100%   13GB   9.0MB/s   23:55    
+
+usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp val*.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+val_images.tar.gz                                                                                                                                 100% 6358MB   9.4MB/s   11:18    
+
+usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp train_images_0.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+train_images_0.tar.gz                                                                                                                             100%   27GB   9.3MB/s   49:34    
+
+
 ```
 <!--- cSpell:enable --->
 
@@ -380,24 +388,24 @@ wget --user user --password pass url
 wget --user user --ask-password url
 wget http://user:password@host/path
 
-wget --user hmf --ask-password https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+wget --user usr --ask-password https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
 
 Space in front of command not to save in history
 
- wget --user hmf --password "Sw9?yd=6qmCq$$ https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+ wget --user usr --password "Sw9?yd=6qmCq$$ https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
 
 Space in front of command not to save in history
 
- wget --user=hmf --password="Sw9?yd=6qmCq$$ https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+ wget --user=usr --password="Sw9?yd=6qmCq$$ https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
 
 Need single quots due to double quotes in password
- wget --user=hmf --password='"Sw9?yd=6qmCq$$' https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+ wget --user=usr --password='PASS' https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
 
  https://serverfault.com/questions/150282/escape-a-in-the-password-parameter-of-wget
 
 <!--- cSpell:disable --->
 ```shell
-ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=hmf --password='"Sw9?yd=6qmCq$$' https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
 --2024-02-23 11:24:13--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
 Resolving huggingface.co (huggingface.co)... 54.192.95.21, 54.192.95.79, 54.192.95.26, ...
 Connecting to huggingface.co (huggingface.co)|54.192.95.21|:443... connected.
@@ -415,4 +423,106 @@ https://huggingface.co/settings/tokens
 
 Space in front of command not to save in history
 
- wget --user=hmf --password='"Sw9?yd=6qmCq$$' --header="Authorization: Bearer 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" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+ wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
+
+ wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz?download=true
+
+ wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz?download=true
+
+ wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz?download=true 
+
+
+
+ ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
+--2024-02-23 11:36:14--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
+Resolving huggingface.co (huggingface.co)... 54.192.95.70, 54.192.95.21, 54.192.95.79, ...
+Connecting to huggingface.co (huggingface.co)|54.192.95.70|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/216cd7b2f345ab50cec3bea6090aa10d5ebf351bca3900627be4645e87e873fd?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_1.tar.gz%3B+filename%3D%22train_images_1.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708947375&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk0NzM3NX19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5LzIxNmNkN2IyZjM0NWFiNTBjZWMzYmVhNjA5MGFhMTBkNWViZjM1MWJjYTM5MDA2MjdiZTQ2NDVlODdlODczZmQ%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=Au0tLdPAfyMQWwoZaZa21u4DxnHfZy9DGuYaBhjXGhuNY0OeM0uWMSjjxnmAihMRw3PagX%7Epzyb%7Ey916mOGKrQFIc3oXk1f0WYhOmLWEru6yowyB9kH8d7tE1Ra-nnZ-eVE9kMvT1d3juX%7EsxHmXQ%7EhV6Oo8pJ99DUKjSIvtSIIlln1thXE38HSaPKWj6CeW5x0XSiR58A7Z0X-DW2mWwIAEwLDfybymEcN%7ExQ0l9IA5cW8FfcJhp%7E1aEQfwyjjFHyeNFsCXbZTjtzCSD2LZUA0QvwE4NLVSjzNoUgZ-Mdm0%7EhJc%7Eh8ei7XmHHAbq-qBbEJiRnPD7xCHQPC7dndjCA__&Key-Pair-Id=KVTP0A1DKRTAX [following]
+--2024-02-23 11:36:15--  https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/216cd7b2f345ab50cec3bea6090aa10d5ebf351bca3900627be4645e87e873fd?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_1.tar.gz%3B+filename%3D%22train_images_1.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708947375&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk0NzM3NX19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5LzIxNmNkN2IyZjM0NWFiNTBjZWMzYmVhNjA5MGFhMTBkNWViZjM1MWJjYTM5MDA2MjdiZTQ2NDVlODdlODczZmQ%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=Au0tLdPAfyMQWwoZaZa21u4DxnHfZy9DGuYaBhjXGhuNY0OeM0uWMSjjxnmAihMRw3PagX%7Epzyb%7Ey916mOGKrQFIc3oXk1f0WYhOmLWEru6yowyB9kH8d7tE1Ra-nnZ-eVE9kMvT1d3juX%7EsxHmXQ%7EhV6Oo8pJ99DUKjSIvtSIIlln1thXE38HSaPKWj6CeW5x0XSiR58A7Z0X-DW2mWwIAEwLDfybymEcN%7ExQ0l9IA5cW8FfcJhp%7E1aEQfwyjjFHyeNFsCXbZTjtzCSD2LZUA0QvwE4NLVSjzNoUgZ-Mdm0%7EhJc%7Eh8ei7XmHHAbq-qBbEJiRnPD7xCHQPC7dndjCA__&Key-Pair-Id=KVTP0A1DKRTAX
+Resolving cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)... 108.157.109.99, 108.157.109.59, 108.157.109.91, ...
+Connecting to cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)|108.157.109.99|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 29261436971 (27G) [application/gzip]
+Saving to: ‘train_images_1.tar.gz?download=true’
+
+train_images_1.tar.gz?download=true      100%[================================================================================>]  27.25G  8.50MB/s    in 47m 10s 
+
+2024-02-23 12:23:25 (9.86 MB/s) - ‘train_images_1.tar.gz?download=true’ saved [29261436971/29261436971]
+
+
+
+ wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
+
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
+--2024-02-23 12:28:06--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
+Resolving huggingface.co (huggingface.co)... 54.192.95.70, 54.192.95.79, 54.192.95.21, ...
+Connecting to huggingface.co (huggingface.co)|54.192.95.70|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/0a7c68e057bd2c65f9ab4de3458b01c6538eb2fbcc0bce59e77836e82369622f?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_2.tar.gz%3B+filename%3D%22train_images_2.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708946867&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk0Njg2N319LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5LzBhN2M2OGUwNTdiZDJjNjVmOWFiNGRlMzQ1OGIwMWM2NTM4ZWIyZmJjYzBiY2U1OWU3NzgzNmU4MjM2OTYyMmY%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=Kji5s8eJ2o6AGUZJqPhlZWbth776k9DL4Li3C%7E9APxiwtsEtYZ%7EttohS40NOtEaVEc1XbJrLdZybytwdNE77FQ-OtKwvHiMzhWSKOLZhfu0QvuF8TXQtgOiweHpn2ywy0ATRfMl5DYUkGIvRFRfRc72mpjuUsy5SZcqr0djOpd01YT0Q69jOh7EfsWAi57b3QhHPRBdwOLNYyA0U5VsT3oPbwsMD06WtqwIU77ItHuGQNBLj1ULkz7uUhjmlYB2BlfOX1YKfLNsnsT43yg9jSKLGkG49tZdB1JUxgPD1JWU7BdYae2Ql0%7ELwDWMV2WxtYq0KRd7JkXxoiT009MqyVg__&Key-Pair-Id=KVTP0A1DKRTAX [following]
+--2024-02-23 12:28:06--  https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/0a7c68e057bd2c65f9ab4de3458b01c6538eb2fbcc0bce59e77836e82369622f?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_2.tar.gz%3B+filename%3D%22train_images_2.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708946867&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk0Njg2N319LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5LzBhN2M2OGUwNTdiZDJjNjVmOWFiNGRlMzQ1OGIwMWM2NTM4ZWIyZmJjYzBiY2U1OWU3NzgzNmU4MjM2OTYyMmY%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=Kji5s8eJ2o6AGUZJqPhlZWbth776k9DL4Li3C%7E9APxiwtsEtYZ%7EttohS40NOtEaVEc1XbJrLdZybytwdNE77FQ-OtKwvHiMzhWSKOLZhfu0QvuF8TXQtgOiweHpn2ywy0ATRfMl5DYUkGIvRFRfRc72mpjuUsy5SZcqr0djOpd01YT0Q69jOh7EfsWAi57b3QhHPRBdwOLNYyA0U5VsT3oPbwsMD06WtqwIU77ItHuGQNBLj1ULkz7uUhjmlYB2BlfOX1YKfLNsnsT43yg9jSKLGkG49tZdB1JUxgPD1JWU7BdYae2Ql0%7ELwDWMV2WxtYq0KRd7JkXxoiT009MqyVg__&Key-Pair-Id=KVTP0A1DKRTAX
+Resolving cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)... 108.157.109.59, 108.157.109.99, 108.157.109.100, ...
+Connecting to cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)|108.157.109.59|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 29036415239 (27G) [application/gzip]
+Saving to: ‘train_images_2.tar.gz’
+
+train_images_2.tar.gz                    100%[================================================================================>]  27.04G  43.8MB/s    in 10m 28s 
+
+2024-02-23 12:38:35 (44.1 MB/s) - ‘train_images_2.tar.gz’ saved [29036415239/29036415239]
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz
+--2024-02-23 12:41:56--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz
+Resolving huggingface.co (huggingface.co)... 54.192.95.79, 54.192.95.70, 54.192.95.26, ...
+Connecting to huggingface.co (huggingface.co)|54.192.95.79|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/0cc2290c0f2d2be6a060f7edaef881e76558e5c3fda8ab30c0a3a78021ac5619?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_3.tar.gz%3B+filename%3D%22train_images_3.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708951316&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk1MTMxNn19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5LzBjYzIyOTBjMGYyZDJiZTZhMDYwZjdlZGFlZjg4MWU3NjU1OGU1YzNmZGE4YWIzMGMwYTNhNzgwMjFhYzU2MTk%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=xapeGFm3s2D4bRZ4iasH91N8qLcRXQw4y1YOsJMM0t3q54VfNDziPPcTpboQ0VTKO%7E8%7E6iUH6Q%7EzAZEY7VLuNiT24pcbyPvQ9Ug0Zj2KJ3WcEbDg5JM4%7EMGhGD-SI8wxz7f%7EETxw9DFkGr5Biuz0l0v3HJzW0za4AgQXa4TAWMglWK32bO21qNvWK%7E63SwB2WuBPe25eQ8HS50RnO6xzscx2rbHA-%7EuxYzUR7AFTwm-pGn7icILjgqHQ4-HLTNKiUXBE3ydRLfhebU0E1YB7TWcmWWn7dOKTRdp9i37hzlchhMPTP0flHDW6Ncvw-nAvxj6oRk4KarmOKJa5cX5-NA__&Key-Pair-Id=KVTP0A1DKRTAX [following]
+--2024-02-23 12:41:56--  https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/0cc2290c0f2d2be6a060f7edaef881e76558e5c3fda8ab30c0a3a78021ac5619?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_3.tar.gz%3B+filename%3D%22train_images_3.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708951316&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk1MTMxNn19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5LzBjYzIyOTBjMGYyZDJiZTZhMDYwZjdlZGFlZjg4MWU3NjU1OGU1YzNmZGE4YWIzMGMwYTNhNzgwMjFhYzU2MTk%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=xapeGFm3s2D4bRZ4iasH91N8qLcRXQw4y1YOsJMM0t3q54VfNDziPPcTpboQ0VTKO%7E8%7E6iUH6Q%7EzAZEY7VLuNiT24pcbyPvQ9Ug0Zj2KJ3WcEbDg5JM4%7EMGhGD-SI8wxz7f%7EETxw9DFkGr5Biuz0l0v3HJzW0za4AgQXa4TAWMglWK32bO21qNvWK%7E63SwB2WuBPe25eQ8HS50RnO6xzscx2rbHA-%7EuxYzUR7AFTwm-pGn7icILjgqHQ4-HLTNKiUXBE3ydRLfhebU0E1YB7TWcmWWn7dOKTRdp9i37hzlchhMPTP0flHDW6Ncvw-nAvxj6oRk4KarmOKJa5cX5-NA__&Key-Pair-Id=KVTP0A1DKRTAX
+Resolving cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)... 108.157.109.100, 108.157.109.59, 108.157.109.99, ...
+Connecting to cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)|108.157.109.100|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 29227044756 (27G) [application/gzip]
+Saving to: ‘train_images_3.tar.gz’
+
+train_images_3.tar.gz                    100%[================================================================================>]  27.22G  34.1MB/s    in 12m 3s  
+
+2024-02-23 12:54:00 (38.5 MB/s) - ‘train_images_3.tar.gz’ saved [29227044756/29227044756]
+
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$   wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz
+--2024-02-23 12:55:13--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz
+Resolving huggingface.co (huggingface.co)... 54.192.95.70, 54.192.95.26, 54.192.95.21, ...
+Connecting to huggingface.co (huggingface.co)|54.192.95.70|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/bf6ab4b53f4b66adbff204ed7f4e36c9c704be6852b407c5147934f2a45c4595?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_4.tar.gz%3B+filename%3D%22train_images_4.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708949015&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk0OTAxNX19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5L2JmNmFiNGI1M2Y0YjY2YWRiZmYyMDRlZDdmNGUzNmM5YzcwNGJlNjg1MmI0MDdjNTE0NzkzNGYyYTQ1YzQ1OTU%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=cg3QRxZQzcLYXeCKRgSea83t2tTlJRp1FqyWEQR-KCoMjZxcNWKaU%7Eo77EVp6JfARfujfn4C5cjAzYdsiMzKfIrLZ7ZwTJ1MDek19HKb2xFH9BN7N6iZVWX%7EXM7INsNNHoYOvSrUn296%7E8egJZrY%7Ecd9MtzIy2ldIqW-3MVKb99FjfiFL2i9uXu5y0x4kCNB0twgcFK28QcwSeXtLN%7EAdKQqdLiZvi85s8jM0u2ws7fI9M0A7i2XddFlZ3JhGo4VsC4QRQ-NHvJGU9SSjBauBRTI2EjkNmT12msyvhbCT9L%7EG7LoW5jQhSYav3feIIWIuKWBPLQFskfpT9OnfKb9Aw__&Key-Pair-Id=KVTP0A1DKRTAX [following]
+--2024-02-23 12:55:13--  https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/bf6ab4b53f4b66adbff204ed7f4e36c9c704be6852b407c5147934f2a45c4595?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_4.tar.gz%3B+filename%3D%22train_images_4.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708949015&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk0OTAxNX19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5L2JmNmFiNGI1M2Y0YjY2YWRiZmYyMDRlZDdmNGUzNmM5YzcwNGJlNjg1MmI0MDdjNTE0NzkzNGYyYTQ1YzQ1OTU%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=cg3QRxZQzcLYXeCKRgSea83t2tTlJRp1FqyWEQR-KCoMjZxcNWKaU%7Eo77EVp6JfARfujfn4C5cjAzYdsiMzKfIrLZ7ZwTJ1MDek19HKb2xFH9BN7N6iZVWX%7EXM7INsNNHoYOvSrUn296%7E8egJZrY%7Ecd9MtzIy2ldIqW-3MVKb99FjfiFL2i9uXu5y0x4kCNB0twgcFK28QcwSeXtLN%7EAdKQqdLiZvi85s8jM0u2ws7fI9M0A7i2XddFlZ3JhGo4VsC4QRQ-NHvJGU9SSjBauBRTI2EjkNmT12msyvhbCT9L%7EG7LoW5jQhSYav3feIIWIuKWBPLQFskfpT9OnfKb9Aw__&Key-Pair-Id=KVTP0A1DKRTAX
+Resolving cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)... 108.157.109.99, 108.157.109.100, 108.157.109.59, ...
+Connecting to cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)|108.157.109.99|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 29147095755 (27G) [application/gzip]
+Saving to: ‘train_images_4.tar.gz’
+
+train_images_4.tar.gz                    100%[================================================================================>]  27.14G  35.1MB/s    in 15m 51s 
+
+2024-02-23 13:11:04 (29.2 MB/s) - ‘train_images_4.tar.gz’ saved [29147095755/29147095755]
+
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ ls -lh
+total 155G
+-rw-rw-r-- 1 ubuntu root  84K Feb 23 09:46 README.md
+-rw-rw-r-- 1 ubuntu root  46K Feb 23 09:45 classes.py
+-rw-rw-r-- 1 ubuntu root 1.6K Feb 23 09:46 gitattributes
+-rw-rw-r-- 1 ubuntu root 4.7K Feb 23 09:45 imagenet-1k.py
+-rw-rw-r-- 1 ubuntu root  13G Feb 23 10:12 test_images.tar.gz
+-rw-rw-r-- 1 ubuntu root  28G Feb 23 12:11 train_images_0.tar.gz
+-rw-rw-r-- 1 ubuntu root  28G May 24  2022 train_images_1.tar.gz
+-rw-rw-r-- 1 ubuntu root  28G May 24  2022 train_images_2.tar.gz
+-rw-rw-r-- 1 ubuntu root  28G May 24  2022 train_images_3.tar.gz
+-rw-rw-r-- 1 ubuntu root  28G May 24  2022 train_images_4.tar.gz
+-rw-rw-r-- 1 ubuntu root 6.3G Feb 23 12:37 val_images.tar.gz
+
+
+
+
+
