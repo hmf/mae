@@ -383,25 +383,38 @@ Username/Password Authentication Failed.
 <!--- cSpell:enable --->
 
 
+<!--- cSpell:disable --->
+```shell
 https://askubuntu.com/questions/29079/how-do-i-provide-a-username-and-password-to-wget
 wget --user user --password pass url
 wget --user user --ask-password url
 wget http://user:password@host/path
 
 wget --user usr --ask-password https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+```
+<!--- cSpell:enable --->
 
 Space in front of command not to save in history
 
+<!--- cSpell:disable --->
+```shell
  wget --user usr --password "Sw9?yd=6qmCq$$ https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+```
+<!--- cSpell:enable --->
 
 Space in front of command not to save in history
 
+<!--- cSpell:disable --->
+```shell
  wget --user=usr --password="Sw9?yd=6qmCq$$ https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
 
 Need single quots due to double quotes in password
  wget --user=usr --password='PASS' https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+```
+<!--- cSpell:enable --->
 
  https://serverfault.com/questions/150282/escape-a-in-the-password-parameter-of-wget
+
 
 <!--- cSpell:disable --->
 ```shell
@@ -417,6 +430,8 @@ Username/Password Authentication Failed.
 <!--- cSpell:enable --->
 
 
+<!--- cSpell:disable --->
+```shell
 https://discuss.huggingface.co/t/private-data-and-wget/35115/2
 wget --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/GeneralAwareness/Various/resolve/main/file.zip
 https://huggingface.co/settings/tokens
@@ -430,10 +445,14 @@ Space in front of command not to save in history
  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz?download=true
 
  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz?download=true 
+```
+<!--- cSpell:enable --->
 
 
 
- ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
+ <!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
 --2024-02-23 11:36:14--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
 Resolving huggingface.co (huggingface.co)... 54.192.95.70, 54.192.95.21, 54.192.95.79, ...
 Connecting to huggingface.co (huggingface.co)|54.192.95.70|:443... connected.
@@ -449,10 +468,14 @@ Saving to: ‘train_images_1.tar.gz?download=true’
 train_images_1.tar.gz?download=true      100%[================================================================================>]  27.25G  8.50MB/s    in 47m 10s 
 
 2024-02-23 12:23:25 (9.86 MB/s) - ‘train_images_1.tar.gz?download=true’ saved [29261436971/29261436971]
+```
+<!--- cSpell:enable --->
 
 
 
- wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
+ <!--- cSpell:disable --->
+```shell
+wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
 
 
 ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
@@ -471,7 +494,12 @@ Saving to: ‘train_images_2.tar.gz’
 train_images_2.tar.gz                    100%[================================================================================>]  27.04G  43.8MB/s    in 10m 28s 
 
 2024-02-23 12:38:35 (44.1 MB/s) - ‘train_images_2.tar.gz’ saved [29036415239/29036415239]
+```
+<!--- cSpell:enable --->
 
+
+<!--- cSpell:disable --->
+```shell
 ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz
 --2024-02-23 12:41:56--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz
 Resolving huggingface.co (huggingface.co)... 54.192.95.79, 54.192.95.70, 54.192.95.26, ...
@@ -488,8 +516,13 @@ Saving to: ‘train_images_3.tar.gz’
 train_images_3.tar.gz                    100%[================================================================================>]  27.22G  34.1MB/s    in 12m 3s  
 
 2024-02-23 12:54:00 (38.5 MB/s) - ‘train_images_3.tar.gz’ saved [29227044756/29227044756]
+```
+<!--- cSpell:enable --->
 
 
+
+<!--- cSpell:disable --->
+```shell
 ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$   wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz
 --2024-02-23 12:55:13--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz
 Resolving huggingface.co (huggingface.co)... 54.192.95.70, 54.192.95.26, 54.192.95.21, ...
@@ -506,8 +539,12 @@ Saving to: ‘train_images_4.tar.gz’
 train_images_4.tar.gz                    100%[================================================================================>]  27.14G  35.1MB/s    in 15m 51s 
 
 2024-02-23 13:11:04 (29.2 MB/s) - ‘train_images_4.tar.gz’ saved [29147095755/29147095755]
+```
+<!--- cSpell:enable --->
 
 
+<!--- cSpell:disable --->
+```shell
 ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ ls -lh
 total 155G
 -rw-rw-r-- 1 ubuntu root  84K Feb 23 09:46 README.md
@@ -521,8 +558,71 @@ total 155G
 -rw-rw-r-- 1 ubuntu root  28G May 24  2022 train_images_3.tar.gz
 -rw-rw-r-- 1 ubuntu root  28G May 24  2022 train_images_4.tar.gz
 -rw-rw-r-- 1 ubuntu root 6.3G Feb 23 12:37 val_images.tar.gz
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ cd /mnt/data02/data/cache/
+ubuntu@cese-produtech3r:/mnt/data02/data/cache$ mkdir imagenet-1k
+ubuntu@cese-produtech3r:/mnt/data02/data/cache$ cd imagenet-1k/
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k$ mkdir train
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k$ mkdir test
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k$ mkdir val
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k$ 
+```
+<!--- cSpell:enable --->
+
+Copy and extract test data (will take some time, avoid using the `-v` (verbose) flag):
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ cp test_images.tar.gz /mnt/data02/data/cache/imagenet-1k/test/
+
+ubuntu@cese-produtech3r:~$ cd /mnt/data02/data/cache/imagenet-1k/test/
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ 
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ tar -xvzf test_images.tar.gz 
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ rm test_images.tar.gz 
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ ls -1 | wc -l
+100000
+```
+<!--- cSpell:enable --->
+
+Copy and extract test data:
+
+time wget -q -O /dev/null https://unix.stackexchange.com/
+
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ time cp val_images.tar.gz /mnt/data02/data/cache/imagenet-1k/val/
+
+real	5m38.139s
+user	0m0.065s
+sys	0m10.050s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/val$ ls
+```
+<!--- cSpell:enable --->
+
+Copy and extract test data:
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
 
 
 
-
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
 
