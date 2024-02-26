@@ -584,7 +584,7 @@ ubuntu@cese-produtech3r:~$ cd /mnt/data02/data/cache/imagenet-1k/test/
 ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ 
 ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ tar -xvzf test_images.tar.gz 
 ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ rm test_images.tar.gz 
-ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ ls -1 | wc -l
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ ls -l | wc -l
 100000
 ```
 <!--- cSpell:enable --->
@@ -602,7 +602,15 @@ real	5m38.139s
 user	0m0.065s
 sys	0m10.050s
 
-ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/val$ ls
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/val$ 
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/val$ time tar -xzf val_images.tar.gz 
+
+real	46m36.322s
+user	1m20.056s
+sys	0m50.401s
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/val$ rm val_images.tar.gz
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/val$ ls -l | wc -l
+50001
 ```
 <!--- cSpell:enable --->
 
