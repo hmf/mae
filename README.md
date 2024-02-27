@@ -651,13 +651,52 @@ sys	0m38.058s
 ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ cd /mnt/data02/data/cache/imagenet-1k/train
 ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ 
 
-
 ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time tar -xzf train_images_0.tar.gz
 
 real	74m1.013s
 user	5m23.077s
 sys	3m24.777s
 
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time tar -xzf train_images_1.tar.gz
+
+real	48m38.565s
+user	5m14.130s
+sys	3m16.233s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time tar -xzf train_images_2.tar.gz
+
+real	55m34.729s
+user	5m28.846s
+sys	3m13.015s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time tar -xzf train_images_3.tar.gz
+
+real	51m28.530s
+user	5m18.405s
+sys	3m18.663s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time tar -xzf train_images_4.tar.gz
+
+real	57m31.923s
+user	5m26.846s
+sys	3m26.966s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time ls -l | wc -l
+1281173
+
+real	2m9.870s
+user	0m2.591s
+sys	0m13.099s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   67G   38G  65% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  589G  512G  54% /mnt/data02
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
 
 ```
 <!--- cSpell:enable --->
