@@ -618,6 +618,47 @@ Copy and extract test data:
 
 <!--- cSpell:disable --->
 ```shell
+buntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ time cp train_images_0.tar.gz /mnt/data02/data/cache/imagenet-1k/train/
+
+real	17m48.831s
+user	0m0.280s
+sys	0m38.470s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ time cp train_images_1.tar.gz /mnt/data02/data/cache/imagenet-1k/train/
+
+real	17m27.775s
+user	0m0.246s
+sys	0m37.565s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ time cp train_images_2.tar.gz /mnt/data02/data/cache/imagenet-1k/train/
+
+real	14m48.684s
+user	0m0.192s
+sys	0m37.380s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ time cp train_images_3.tar.gz /mnt/data02/data/cache/imagenet-1k/train/
+
+real	14m54.299s
+user	0m0.216s
+sys	0m37.659s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ time cp train_images_4.tar.gz /mnt/data02/data/cache/imagenet-1k/train/
+
+real	10m48.578s
+user	0m0.245s
+sys	0m38.058s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ cd /mnt/data02/data/cache/imagenet-1k/train
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ 
+
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time tar -xzf train_images_0.tar.gz
+
+real	74m1.013s
+user	5m23.077s
+sys	3m24.777s
+
+
 ```
 <!--- cSpell:enable --->
 
