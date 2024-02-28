@@ -222,6 +222,10 @@ n_gpu = 1
 * Matplotlib
 * pip3 install timm==0.4.5
 
+## Code corrections/changes
+
+Try with running the code. First download the model checkpoint. We see that we need the data paths set up. These are set set for `data`. 
+
 <!--- cSpell:disable --->
 ```shell
 vscode ➜ /workspaces/mae (test_1) $ mkdir checkpoints
@@ -246,9 +250,14 @@ vscode ➜ /workspaces/mae (test_1) $ cd data/
 ```
 <!--- cSpell:enable --->
 
-We need to sign-up and register at: http://image-net.org/download. The answer is sent via e-mail within 5 days of the request. 
+To test the code, we need the `imagenet-1k` dataset. We need to sign-up and register at: http://image-net.org/download. The answer should have been sent via e-mail within 5 days of the request. Here is the recorded message:
 
-You have submitted a request at Fri Feb 16 03:29:35 2024. We are reviewing your request. When we approve your request, we will notify you by email. You should expect to hear from us in 5 work days.
+
+> You have submitted a request at Fri Feb 16 03:29:35 2024. We are reviewing your request. When we approve your request, we will notify you by email. You should expect to hear from us in 5 work days.
+
+No access was given. 
+
+We need to update th code. Code originally written for PyTorch v1.x. Some references for the update:
 
 1. [Tips and Tricks for Upgrading to PyTorch 2.0](https://towardsdatascience.com/tips-and-tricks-for-upgrading-to-pytorch-2-3127db1d1f3d)
   1. https://pytorch.org/docs/stable/generated/torch.compile.html
@@ -267,21 +276,16 @@ You have submitted a request at Fri Feb 16 03:29:35 2024. We are reviewing your 
   1. [Minifier](https://pytorch.org/functorch/stable/notebooks/minifier.html)
 
 
+Here is the command used to used to train the moel using the previously downloaded checkpoint and assuming the data is in the `./data` path:
 
 <!--- cSpell:disable --->
-imagenet_full_size-061417.tar.gz
-
-python main_finetune.py --eval --resume mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path ${IMAGENET_DIR}
-
-python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path ./data
-
 ```shell
 vscode ➜ /workspaces/mae (test_1) $ python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path ./data
 
 ```
-
 <!--- cSpell:enable --->
 
+Here are the errors we got for this test:
 
 1. [ModuleNotFoundError: No module named 'torch._six'](https://github.com/microsoft/DeepSpeed/issues/2845)
    1. Convert from ```from torch._six import inf```
@@ -289,7 +293,7 @@ vscode ➜ /workspaces/mae (test_1) $ python main_finetune.py --eval --resume ch
 1. `FileNotFoundError: [Errno 2] No such file or directory: './data/train'`
 1. `FileNotFoundError: Couldn't find any class folder in ./data/train`
 
-
+Next we tried to get the ImageNet dataset from HuggingFace. Here are the links (to download them, you need to be registered in HuggingFace):
 
 1. [ImageNet sample images (minimal, not split)](https://github.com/EliSchwartz/imagenet-sample-images)
 1. [HuggingFace ImageNet 1k](https://huggingface.co/datasets/imagenet-1k)
@@ -305,6 +309,8 @@ vscode ➜ /workspaces/mae (test_1) $ python main_finetune.py --eval --resume ch
          1. [train_images_4.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz?download=true)
 
 
+These are the set of folders that are expected by the code:
+
 <!--- cSpell:disable --->
 ```shell
 vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/train
@@ -313,9 +319,7 @@ vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/val
 ```
 <!--- cSpell:enable --->
 
-Make sure you can launch the dev container (Docker). 
-
-Go to local source with data:
+The dataset if very large so it is necessary to use the share. First make sure you can access the share via a standard SSH login. Create the destination folder to store the data.
 
 <!--- cSpell:disable --->
 ```shell
@@ -325,7 +329,17 @@ ubuntu@cese-produtech3r:/mnt/data02/data/src$ mkdir imagenet-1k
 ```
 <!--- cSpell:enable --->
 
-Copy source data from the local to the remote node (these files are large so may take a while, may be vest todownload dirctly via curl or wget):
+Make sure you can launch the dev container (Docker). The container must also bind to the share.  
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ ls /mnt/data02/data/cache/imagenet-1k/
+test  train  val
+```
+<!--- cSpell:enable --->
+
+
+Go to local source data path. Copy the source data from the local to the remote node. These files are large so it may take a while. Alternatively download (via curl or wget) the data directly from HuggingFace from the remote shared folder. Here is an example of copying our local files to the remote shared node:
 
 <!--- cSpell:disable --->
 ```shell
@@ -347,28 +361,12 @@ val_images.tar.gz                                                               
 
 usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp train_images_0.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
 train_images_0.tar.gz                                                                                                                             100%   27GB   9.3MB/s   49:34    
-
-
 ```
 <!--- cSpell:enable --->
 
 <!-- https://linuxize.com/post/how-to-use-scp-command-to-securely-transfer-files/ -->
 
-
-scp file.txt remote_username@10.10.0.2:/remote/directory
-scp *.py ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-scp gitattributes ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-scp README.md ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-scp test*.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-
-scp val*.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-
-scp train_images_0.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-scp train_images_1.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-scp train_images_2.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-scp train_images_3.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-scp train_images_4.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
-
+Here are the examples of downloading the training data directly from HuggingFace. Note that we require to login to downlaod thr data. The following command will fail:
 
 <!--- cSpell:disable --->
 ```shell
@@ -382,39 +380,10 @@ Username/Password Authentication Failed.
 ```
 <!--- cSpell:enable --->
 
+<!-- https://askubuntu.com/questions/29079/how-do-i-provide-a-username-and-password-to-wget -->
+<!--  https://serverfault.com/questions/150282/escape-a-in-the-password-parameter-of-wget -->
 
-<!--- cSpell:disable --->
-```shell
-https://askubuntu.com/questions/29079/how-do-i-provide-a-username-and-password-to-wget
-wget --user user --password pass url
-wget --user user --ask-password url
-wget http://user:password@host/path
-
-wget --user usr --ask-password https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
-```
-<!--- cSpell:enable --->
-
-Space in front of command not to save in history
-
-<!--- cSpell:disable --->
-```shell
- wget --user usr --password "Sw9?yd=6qmCq$$ https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
-```
-<!--- cSpell:enable --->
-
-Space in front of command not to save in history
-
-<!--- cSpell:disable --->
-```shell
- wget --user=usr --password="Sw9?yd=6qmCq$$ https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
-
-Need single quots due to double quotes in password
- wget --user=usr --password='PASS' https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
-```
-<!--- cSpell:enable --->
-
- https://serverfault.com/questions/150282/escape-a-in-the-password-parameter-of-wget
-
+Here is a command that provides the user and password. Note the space in front of command so as not to save in history. This prevents others from recalling your sensitive data. This command also fails because HuggingFace uses a token for controlling the access to the data:
 
 <!--- cSpell:disable --->
 ```shell
@@ -429,30 +398,14 @@ Username/Password Authentication Failed.
 ```
 <!--- cSpell:enable --->
 
+<!-- https://discuss.huggingface.co/t/private-data-and-wget/35115/2 -->
+The next commands show the data download using the token (replace `HF_TOKEN` with your token).
 
-<!--- cSpell:disable --->
-```shell
-https://discuss.huggingface.co/t/private-data-and-wget/35115/2
-wget --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/GeneralAwareness/Various/resolve/main/file.zip
-https://huggingface.co/settings/tokens
-
-Space in front of command not to save in history
-
- wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
-
- wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz?download=true
-
- wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz?download=true
-
- wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz?download=true 
-```
-<!--- cSpell:enable --->
-
-
+File `train_images_1.tar.gz` (`train_images_0.tar.gz` missing):
 
  <!--- cSpell:disable --->
 ```shell
-ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz
 --2024-02-23 11:36:14--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
 Resolving huggingface.co (huggingface.co)... 54.192.95.70, 54.192.95.21, 54.192.95.79, ...
 Connecting to huggingface.co (huggingface.co)|54.192.95.70|:443... connected.
@@ -467,17 +420,14 @@ Saving to: ‘train_images_1.tar.gz?download=true’
 
 train_images_1.tar.gz?download=true      100%[================================================================================>]  27.25G  8.50MB/s    in 47m 10s 
 
-2024-02-23 12:23:25 (9.86 MB/s) - ‘train_images_1.tar.gz?download=true’ saved [29261436971/29261436971]
+2024-02-23 12:23:25 (9.86 MB/s) - ‘train_images_1.tar.gz’ saved [29261436971/29261436971]
 ```
 <!--- cSpell:enable --->
 
-
+File: `train_images_2.tar.gz`
 
  <!--- cSpell:disable --->
 ```shell
-wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
-
-
 ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
 --2024-02-23 12:28:06--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
 Resolving huggingface.co (huggingface.co)... 54.192.95.70, 54.192.95.79, 54.192.95.21, ...
@@ -497,6 +447,7 @@ train_images_2.tar.gz                    100%[==================================
 ```
 <!--- cSpell:enable --->
 
+File: `train_images_3.tar.gz`
 
 <!--- cSpell:disable --->
 ```shell
@@ -519,7 +470,7 @@ train_images_3.tar.gz                    100%[==================================
 ```
 <!--- cSpell:enable --->
 
-
+File: `train_images_4.tar.gz`
 
 <!--- cSpell:disable --->
 ```shell
@@ -542,6 +493,7 @@ train_images_4.tar.gz                    100%[==================================
 ```
 <!--- cSpell:enable --->
 
+These are the files copied to the shared folder:
 
 <!--- cSpell:disable --->
 ```shell
@@ -701,9 +653,19 @@ tmpfs                                12G  8.2k   12G   1% /run/user/1002
 ```
 <!--- cSpell:enable --->
 
+Remove the archives of the training data that are not required anymore:
+
 
 <!--- cSpell:disable --->
 ```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ ls *.gz
+train_images_0.tar.gz  train_images_1.tar.gz  train_images_2.tar.gz  train_images_3.tar.gz  train_images_4.tar.gz
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ rm -v train_images_*.tar.gz
+removed 'train_images_0.tar.gz'
+removed 'train_images_1.tar.gz'
+removed 'train_images_2.tar.gz'
+removed 'train_images_3.tar.gz'
+removed 'train_images_4.tar.gz'
 ```
 <!--- cSpell:enable --->
 
