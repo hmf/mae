@@ -276,7 +276,7 @@ We need to update th code. Code originally written for PyTorch v1.x. Some refere
   1. [Minifier](https://pytorch.org/functorch/stable/notebooks/minifier.html)
 
 
-Here is the command used to used to train the moel using the previously downloaded checkpoint and assuming the data is in the `./data` path:
+Here is the command used to used to train the model using the previously downloaded checkpoint and assuming the data is in the `./data` path:
 
 <!--- cSpell:disable --->
 ```shell
@@ -668,6 +668,56 @@ removed 'train_images_4.tar.gz'
 <!--- cSpell:enable --->
 
 Current space left:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   68G   37G  65% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  443G  657G  41% /mnt/data02
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+```
+<!--- cSpell:enable --->
+
+
+Here is the command used to used to train the model using the previously downloaded checkpoint and assuming the data is in the share `./data` path:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path /mnt/data02/data/cache/imagenet-1k/
+
+```
+<!--- cSpell:enable --->
+
+Process stalls but is executing (see below). After 15 minutes, the GPU is till not being used. The process was forcefully terminated.
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ ps ax | grep -i finetune
+1869259 pts/1    Dl+    0:03 python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path /mnt/data02/data/cache/imagenet-1k/
+```
+<!--- cSpell:enable --->
+
+Can we copy this to the local VM disk and continue?. The following commands also stalled:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ du /mnt/data02/data/cache/imagenet-1k/
+ubuntu@cese-produtech3r:~$ du -sh /mnt/data02/data/cache/imagenet-1k/
+ubuntu@cese-produtech3r:~$ time du -sh /mnt/data02/data/cache/imagenet-1k/
+164G	/mnt/data02/data/cache/imagenet-1k/
+
+real	12m34.151s
+user	0m0.978s
+sys	1m24.493s
+```
+<!--- cSpell:enable --->
+
+Seems not, we need 164GB and only have a total of 104G (37G available). This is a show stopper. 
 
 <!--- cSpell:disable --->
 ```shell
