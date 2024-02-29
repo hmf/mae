@@ -513,6 +513,7 @@ total 155G
 ```
 <!--- cSpell:enable --->
 
+Create the path were the data will be paced for training and evaluation:
 
 <!--- cSpell:disable --->
 ```shell
@@ -526,7 +527,7 @@ ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k$
 ```
 <!--- cSpell:enable --->
 
-Copy and extract test data (will take some time, avoid using the `-v` (verbose) flag):
+Copy and extract **test data** (will take some time, avoid using the `-v` (verbose) flag). Here we copy the test data and extract it in the final path used by the code. The archive is removed because it is not required anymore:
 
 <!--- cSpell:disable --->
 ```shell
@@ -541,9 +542,7 @@ ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ ls -l | wc -l
 ```
 <!--- cSpell:enable --->
 
-Copy and extract test data:
-
-time wget -q -O /dev/null https://unix.stackexchange.com/
+Copy and extract **validation data**. The archive is removed because it is not required anymore. We use the `time` command to check the time (taking too long):
 
 
 <!--- cSpell:disable --->
@@ -566,7 +565,7 @@ ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/val$ ls -l | wc -l
 ```
 <!--- cSpell:enable --->
 
-Copy and extract test data:
+Copy and extract **train data**:
 
 <!--- cSpell:disable --->
 ```shell
@@ -655,7 +654,6 @@ tmpfs                                12G  8.2k   12G   1% /run/user/1002
 
 Remove the archives of the training data that are not required anymore:
 
-
 <!--- cSpell:disable --->
 ```shell
 ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ ls *.gz
@@ -666,6 +664,22 @@ removed 'train_images_1.tar.gz'
 removed 'train_images_2.tar.gz'
 removed 'train_images_3.tar.gz'
 removed 'train_images_4.tar.gz'
+```
+<!--- cSpell:enable --->
+
+Current space left:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   68G   37G  65% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  443G  657G  41% /mnt/data02
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
 ```
 <!--- cSpell:enable --->
 
