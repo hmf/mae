@@ -387,7 +387,7 @@ Here is a command that provides the user and password. Note the space in front o
 
 <!--- cSpell:disable --->
 ```shell
-ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz
 --2024-02-23 11:24:13--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
 Resolving huggingface.co (huggingface.co)... 54.192.95.21, 54.192.95.79, 54.192.95.26, ...
 Connecting to huggingface.co (huggingface.co)|54.192.95.21|:443... connected.
@@ -870,6 +870,7 @@ data  data02
 ```
 <!--- cSpell:enable --->
 
+Add the mount point to the OS configuration (backup before changes):
 
 <!--- cSpell:disable --->
 ```shell
@@ -878,8 +879,7 @@ ubuntu@cese-produtech3r:~$ sudo nano /etc/fstab
 ```
 <!--- cSpell:enable --->
 
-
-Used tabs to separate the fields. 
+I used tabs to separate the fields. Here is the content of the configuration file `fstab`:
 
 <!--- cSpell:disable --->
 ```shell
@@ -891,7 +891,7 @@ LABEL=UEFI	/boot/efi	vfat	umask=0077	0 1
 ```
 <!--- cSpell:enable --->
 
-
+Force mount and check that its available:
 
 <!--- cSpell:disable --->
 ```shell
@@ -903,15 +903,10 @@ drwxrwxrwx 5 root root    6 Feb 28 18:49 data02
 ```
 <!--- cSpell:enable --->
 
-
-
+Create the top folder to hold the ImageNet-1K data:
 
 <!--- cSpell:disable --->
 ```shell
-```
-<!--- cSpell:enable --->
-
-
 ubuntu@cese-produtech3r:~$ cd /mnt/data
 ubuntu@cese-produtech3r:/mnt/data$ 
 
@@ -922,25 +917,93 @@ drwxr-xr-x 3 root root 4096 Mar  1 13:59 data
 drwxrwxrwx 5 root root    6 Feb 28 18:49 data02
 ubuntu@cese-produtech3r:/mnt$ whoami 
 ubuntu
-ubuntu@cese-produtech3r:/mnt$ chown ubuntu:ubuntu /mnt/data
-chown: changing ownership of '/mnt/data': Operation not permitted
 ubuntu@cese-produtech3r:/mnt$ sudo chown ubuntu:ubuntu /mnt/data
 ubuntu@cese-produtech3r:/mnt$ ls -l
 total 18
 drwxr-xr-x 3 ubuntu ubuntu 4096 Mar  1 13:59 data
 drwxrwxrwx 5 root   root      6 Feb 28 18:49 data02
+```
+<!--- cSpell:enable --->
 
+Create the separate folders for training with the ImageNet-1K data:
 
-
-vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/train
-vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/test
-vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/val
-
+<!--- cSpell:disable --->
+```shell
 ubuntu@cese-produtech3r:/mnt$ cd data
 ubuntu@cese-produtech3r:/mnt/data$ mkdir train
 ubuntu@cese-produtech3r:/mnt/data$ mkdir test
 ubuntu@cese-produtech3r:/mnt/data$ mkdir val
+ubuntu@cese-produtech3r:/mnt/data$ ls -l
+total 28
+drwx------ 2 root   root   16384 Mar  1 13:59 lost+found
+drwxrwxr-x 2 ubuntu ubuntu  4096 Mar  1 14:27 test
+drwxrwxr-x 2 ubuntu ubuntu  4096 Mar  1 14:27 train
+drwxrwxr-x 2 ubuntu ubuntu  4096 Mar  1 14:27 val
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ cd /mnt/data
 ubuntu@cese-produtech3r:/mnt/data$ ls
+lost+found  test  train  val
+ubuntu@cese-produtech3r:/mnt/data$ ls -l
+total 28
+drwx------ 2 root   root   16384 Mar  1 13:59 lost+found
+drwxrwxr-x 2 ubuntu ubuntu  4096 Mar  1 14:27 test
+drwxrwxr-x 2 ubuntu ubuntu  4096 Mar  1 14:27 train
+drwxrwxr-x 2 ubuntu ubuntu  4096 Mar  1 14:27 val
+ubuntu@cese-produtech3r:/mnt/data$ cd train/
+```
+<!--- cSpell:enable --->
+
+Each download took about 14 minutes:
+
+<!--- cSpell:disable --->
+```shell
+  wget --user=usr --password='PASS' --header="Authorization: Bearer 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" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz
+
+  wget --user=usr --password='PASS' --header="Authorization: Bearer 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" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz
+
+  wget --user=usr --password='PASS' --header="Authorization: Bearer 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" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
+
+  wget --user=usr --password='PASS' --header="Authorization: Bearer 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" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz
+
+  wget --user=usr --password='PASS' --header="Authorization: Bearer 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" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz
+```
+<!--- cSpell:enable --->
+
+
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -lh
+total 136G
+-rw-rw-r-- 1 ubuntu ubuntu 28G May 24  2022 train_images_0.tar.gz
+-rw-rw-r-- 1 ubuntu ubuntu 28G May 24  2022 train_images_1.tar.gz
+-rw-rw-r-- 1 ubuntu ubuntu 28G May 24  2022 train_images_2.tar.gz
+-rw-rw-r-- 1 ubuntu ubuntu 28G May 24  2022 train_images_3.tar.gz
+-rw-rw-r-- 1 ubuntu ubuntu 28G May 24  2022 train_images_4.tar.gz
+```
+<!--- cSpell:enable --->
+
+
+time tar -xzf train_images_0.tar.gz
+
+ubuntu@cese-produtech3r:/mnt/data/train$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   68G   37G  65% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  443G  657G  41% /mnt/data02
+/dev/vdb                            179G  170G     0 100% /mnt/data
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -l | wc -l
+214766
+ubuntu@cese-produtech3r:/mnt/data/train$ rm *.JPEG
+-bash: /usr/bin/rm: Argument list too long
 
 
 
