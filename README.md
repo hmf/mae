@@ -734,6 +734,217 @@ tmpfs                                12G  8.2k   12G   1% /run/user/1002
 <!--- cSpell:enable --->
 
 
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k$ time du -h
+6.6G	./val
+144G	./train
+14G	./test
+164G	.
+
+real	8m47.133s
+user	0m0.723s
+sys	1m19.383s
+```
+<!--- cSpell:enable --->
+
+
+Need to copy data to new partition. 
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ lsblk
+NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+loop0     7:0    0 63.9M  1 loop /snap/core20/2105
+loop1     7:1    0 63.9M  1 loop /snap/core20/2182
+loop2     7:2    0   87M  1 loop /snap/lxd/26881
+loop3     7:3    0   87M  1 loop /snap/lxd/27037
+loop4     7:4    0 40.4M  1 loop /snap/snapd/20671
+vda     252:0    0  100G  0 disk 
+├─vda1  252:1    0 99.9G  0 part /
+├─vda14 252:14   0    4M  0 part 
+└─vda15 252:15   0  106M  0 part /boot/efi
+vdb     252:16   0  170G  0 disk 
+```
+<!--- cSpell:enable --->
+
+<!-- https://phoenixnap.com/kb/linux-format-disk -->
+
+The partition/disk `vdb` has no file system:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ lsblk -f
+NAME FSTYPE FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+loop0
+     squash 4.0                                                    0   100% /snap/core20/2105
+loop1
+     squash 4.0                                                    0   100% /snap/core20/2182
+loop2
+     squash 4.0                                                    0   100% /snap/lxd/26881
+loop3
+     squash 4.0                                                    0   100% /snap/lxd/27037
+loop4
+     squash 4.0                                                    0   100% /snap/snapd/20671
+vda                                                                         
+├─vda1
+│    ext4   1.0   cloudimg-rootfs
+│                       f44c6339-a6fd-4158-9e95-b421ec3173c9   33.9G    65% /
+├─vda14
+│                                                                           
+└─vda15
+     vfat   FAT32 UEFI  AD67-58A5                              98.3M     6% /boot/efi
+vdb                                                                         
+```
+<!--- cSpell:enable --->
+
+Format with `ext4`: 
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ sudo mkfs -t ext4 /dev/vdb
+mke2fs 1.46.5 (30-Dec-2021)
+Discarding device blocks: done                            
+Creating filesystem with 44564480 4k blocks and 11141120 inodes
+Filesystem UUID: 78ae64d2-664d-4bf0-a681-1f7ca8258365
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, 
+	4096000, 7962624, 11239424, 20480000, 23887872
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (262144 blocks): done
+Writing superblocks and filesystem accounting information: done     
+
+```
+<!--- cSpell:enable --->
+
+We now have `vdb` with an `ext4` filesystem: 
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ lsblk -f
+NAME    FSTYPE   FSVER LABEL           UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+loop0   squashfs 4.0                                                              0   100% /snap/core20/2105
+loop1   squashfs 4.0                                                              0   100% /snap/core20/2182
+loop2   squashfs 4.0                                                              0   100% /snap/lxd/26881
+loop3   squashfs 4.0                                                              0   100% /snap/lxd/27037
+loop4   squashfs 4.0                                                              0   100% /snap/snapd/20671
+vda                                                                                        
+├─vda1  ext4     1.0   cloudimg-rootfs f44c6339-a6fd-4158-9e95-b421ec3173c9   33.9G    65% /
+├─vda14                                                                                    
+└─vda15 vfat     FAT32 UEFI            AD67-58A5                              98.3M     6% /boot/efi
+vdb     ext4     1.0                   78ae64d2-664d-4bf0-a681-1f7ca8258365                
+```
+<!--- cSpell:enable --->
+
+
+Add the partition and its respective mount point. We have the following set-up:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ cat /etc/fstab
+LABEL=cloudimg-rootfs	/	 ext4	discard,errors=remount-ro	0 1
+LABEL=UEFI	/boot/efi	vfat	umask=0077	0 1
+10.55.0.23:/mnt/pool03/cese/data02  /mnt/data02 nfs nfsvers=4,defaults,noatime,nodiratime 0 0
+```
+<!--- cSpell:enable --->
+
+<!-- https://formatswap.com/blog/linux-tutorials/how-to-mount-a-hard-drive-at-boot-in-ubuntu-22-04/ -->
+
+sudo mkdir /mnt/data
+
+/dev/MOUNT_POINT /media/MOUNT_DIR ext4 defaults 0 0
+
+/dev/vdb /mnt/data ext4 defaults 0 0
+
+sudo mount -a
+
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ sudo mkdir /mnt/data
+ubuntu@cese-produtech3r:~$ ls /mnt/
+data  data02
+```
+<!--- cSpell:enable --->
+
+
+ubuntu@cese-produtech3r:~$ sudo cp /etc/fstab /etc/fstab.1
+ubuntu@cese-produtech3r:~$ sudo nano /etc/fstab
+
+Used tab to separate the fields. 
+
+ubuntu@cese-produtech3r:~$ cat /etc/fstab
+LABEL=cloudimg-rootfs	/	 ext4	discard,errors=remount-ro	0 1
+LABEL=UEFI	/boot/efi	vfat	umask=0077	0 1
+/dev/vdb	/mnt/data	ext4	defaults	0 0
+10.55.0.23:/mnt/pool03/cese/data02  /mnt/data02 nfs nfsvers=4,defaults,noatime,nodiratime 0 0
+
+
+ubuntu@cese-produtech3r:~$ sudo mount -a
+ubuntu@cese-produtech3r:~$ ls -l /mnt/
+total 18
+drwxr-xr-x 3 root root 4096 Mar  1 13:59 data
+drwxrwxrwx 5 root root    6 Feb 28 18:49 data02
+
+ubuntu@cese-produtech3r:~$ cd /mnt/data
+ubuntu@cese-produtech3r:/mnt/data$ 
+
+ubuntu@cese-produtech3r:/mnt/data$ cd ..
+ubuntu@cese-produtech3r:/mnt$ ls -l
+total 18
+drwxr-xr-x 3 root root 4096 Mar  1 13:59 data
+drwxrwxrwx 5 root root    6 Feb 28 18:49 data02
+ubuntu@cese-produtech3r:/mnt$ whoami 
+ubuntu
+ubuntu@cese-produtech3r:/mnt$ chown ubuntu:ubuntu /mnt/data
+chown: changing ownership of '/mnt/data': Operation not permitted
+ubuntu@cese-produtech3r:/mnt$ sudo chown ubuntu:ubuntu /mnt/data
+ubuntu@cese-produtech3r:/mnt$ ls -l
+total 18
+drwxr-xr-x 3 ubuntu ubuntu 4096 Mar  1 13:59 data
+drwxrwxrwx 5 root   root      6 Feb 28 18:49 data02
+
+
+
+vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/train
+vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/test
+vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/val
+
+ubuntu@cese-produtech3r:/mnt$ cd data
+ubuntu@cese-produtech3r:/mnt/data$ mkdir train
+ubuntu@cese-produtech3r:/mnt/data$ mkdir test
+ubuntu@cese-produtech3r:/mnt/data$ mkdir val
+ubuntu@cese-produtech3r:/mnt/data$ ls
+
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+
 
 <!--- cSpell:disable --->
 ```shell
