@@ -860,6 +860,7 @@ sudo mkdir /mnt/data
 
 sudo mount -a
 
+Create the mount point:
 
 <!--- cSpell:disable --->
 ```shell
@@ -870,23 +871,46 @@ data  data02
 <!--- cSpell:enable --->
 
 
+<!--- cSpell:disable --->
+```shell
 ubuntu@cese-produtech3r:~$ sudo cp /etc/fstab /etc/fstab.1
 ubuntu@cese-produtech3r:~$ sudo nano /etc/fstab
+```
+<!--- cSpell:enable --->
 
-Used tab to separate the fields. 
 
+Used tabs to separate the fields. 
+
+<!--- cSpell:disable --->
+```shell
 ubuntu@cese-produtech3r:~$ cat /etc/fstab
 LABEL=cloudimg-rootfs	/	 ext4	discard,errors=remount-ro	0 1
 LABEL=UEFI	/boot/efi	vfat	umask=0077	0 1
 /dev/vdb	/mnt/data	ext4	defaults	0 0
 10.55.0.23:/mnt/pool03/cese/data02  /mnt/data02 nfs nfsvers=4,defaults,noatime,nodiratime 0 0
+```
+<!--- cSpell:enable --->
 
 
+
+<!--- cSpell:disable --->
+```shell
 ubuntu@cese-produtech3r:~$ sudo mount -a
 ubuntu@cese-produtech3r:~$ ls -l /mnt/
 total 18
 drwxr-xr-x 3 root root 4096 Mar  1 13:59 data
 drwxrwxrwx 5 root root    6 Feb 28 18:49 data02
+```
+<!--- cSpell:enable --->
+
+
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
 
 ubuntu@cese-produtech3r:~$ cd /mnt/data
 ubuntu@cese-produtech3r:/mnt/data$ 
