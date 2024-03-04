@@ -1159,6 +1159,82 @@ tmpfs                                12G  8.2k   12G   1% /run/user/1002
 ```
 <!--- cSpell:enable --->
 
+Made sure we do not have some archive that has not been removed:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data$ find . -iname "*tar*"
+find: ‘./lost+found’: Permission denied
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data$ sudo du -sh *
+16K	lost+found
+13G	test
+140G	train
+5.6G	val
+```
+<!--- cSpell:enable --->
+
+That is a total of 158.6Gb. Why does t not fit in 179G? Why  does the OS report 170GB used?
+
+Add the following bid to the Docker image:
+
+<!--- cSpell:disable --->
+```json
+    "source=${localEnv:HOME}/../../mnt/data0/,target=${containerWorkspaceFolder}/../../../mnt/data0/,type=bind,consistency=cached"
+```
+<!--- cSpell:enable --->
+
+Make sure the data is visible:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ ls /mnt/data
+lost+found  test  train  val
+```
+<!--- cSpell:enable --->
+
+Use the data:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path /mnt/data
+```
+<!--- cSpell:enable --->
+
+Torchvision generates the following error:
+
+<!--- cSpell:disable --->
+```shell
+FileNotFoundError: Couldn't find any class folder in /mnt/data/train.
+```
+<!--- cSpell:enable --->
+
+https://stackoverflow.com/questions/69199273/torchvision-imagefolder-could-not-find-any-class-folder
+https://discuss.pytorch.org/t/filenotfounderror-couldnt-find-any-class-folder/138578
+
+1. https://stackoverflow.com/questions/77328205/how-to-extract-the-files-of-imagenet-1k-dataset-for-each-class-separately
+  1. https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4
+     1. https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh
+     1. https://github.com/facebookarchive/fb.resnet.torch/blob/master/INSTALL.md
+
+
+wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train.tar --no-check-certificate
+wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_val.tar --no-check-certificate
+
+
+https://github.com/david8862/keras-YOLOv3-model-set/blob/master/common/backbones/imagenet_training/README.md
+  preprocess_imagenet_train_data.py 
+  preprocess_imagenet_validation_data.py
+  
+
+
+
+https://huggingface.co/datasets/imagenet-1k/blob/main/README.md
+
 
 
 <!--- cSpell:disable --->
@@ -1166,6 +1242,20 @@ tmpfs                                12G  8.2k   12G   1% /run/user/1002
 ```
 <!--- cSpell:enable --->
 
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
 
 
 <!--- cSpell:disable --->

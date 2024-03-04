@@ -62,7 +62,8 @@
 	// containerWorkspaceFolder points to the git project root
 	// containerWorkspaceFolderBasename fails
 	"mounts": [
-    "source=${localEnv:HOME}/../../mnt/data02/,target=${containerWorkspaceFolder}/../../../mnt/data02/,type=bind,consistency=cached"
+    "source=${localEnv:HOME}/../../mnt/data02/,target=${containerWorkspaceFolder}/../../../mnt/data02/,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/../../mnt/data/,target=${containerWorkspaceFolder}/../../../mnt/data/,type=bind,consistency=cached"
 	  // "source=${localEnv:HOME}/VSCodeProjects/mvtec_ad,target=${containerWorkspaceFolder}/../mvtec_ad,type=bind,consistency=cached",
 	  // "source=${localEnv:HOME}/VSCodeProjects/backup_data,target=${containerWorkspaceFolder}/../backup_data,type=bind,consistency=cached"
 	],
