@@ -961,15 +961,15 @@ Each download took about 14 minutes:
 
 <!--- cSpell:disable --->
 ```shell
-  wget --user=usr --password='PASS' --header="Authorization: Bearer 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" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz
+  wget --user=usr --password='PASS' --header="Authorization: Bearer Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz
 
-  wget --user=usr --password='PASS' --header="Authorization: Bearer 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" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz
+  wget --user=usr --password='PASS' --header="Authorization: Bearer Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz
 
-  wget --user=usr --password='PASS' --header="Authorization: Bearer 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" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
+  wget --user=usr --password='PASS' --header="Authorization: Bearer Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
 
-  wget --user=usr --password='PASS' --header="Authorization: Bearer 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" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz
+  wget --user=usr --password='PASS' --header="Authorization: Bearer Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz
 
-  wget --user=usr --password='PASS' --header="Authorization: Bearer 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" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz
+  wget --user=usr --password='PASS' --header="Authorization: Bearer Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz
 ```
 <!--- cSpell:enable --->
 
@@ -1043,12 +1043,50 @@ ubuntu@cese-produtech3r:/mnt/data/train$ time rm train_images_2.tar.gz
 real	0m3.082s
 user	0m0.000s
 sys	0m3.065s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xzf train_images_3.tar.gz
+
+real	2m38.090s
+user	2m17.587s
+sys	0m42.454s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time rm train_images_3.tar.gz 
+
+real	0m3.119s
+user	0m0.001s
+sys	0m3.101s
+
+```
+<!--- cSpell:enable --->
+
+Not enough space. Had to extract archive data from one path top another:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ cd ~
+ubuntu@cese-produtech3r:~$ time tar -xzf train_images_4.tar.gz -C /mnt/data/train
+
+real	2m30.143s
+user	2m17.284s
+sys	0m45.787s
 ```
 <!--- cSpell:enable --->
 
 
-
-
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   37G   68G  35% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  443G  657G  41% /mnt/data02
+/dev/vdb                            179G  150G   20G  89% /mnt/data
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+```
+<!--- cSpell:enable --->
 
 
 
