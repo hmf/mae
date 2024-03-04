@@ -1222,14 +1222,35 @@ https://discuss.pytorch.org/t/filenotfounderror-couldnt-find-any-class-folder/13
      1. https://github.com/facebookarchive/fb.resnet.torch/blob/master/INSTALL.md
 
 
-wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train.tar --no-check-certificate
 wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_val.tar --no-check-certificate
+wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train_t3.tar --no-check-certificate
+wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train.tar --no-check-certificate
+wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_test.tar --no-check-certificate DOES NOT EXIST
+
+wget http://www.image-net.org/challenges/LSVRC/2012/nnoupb/ILSVRC2012_img_test.tar
+wget http://www.image-net.org/challenges/LSVRC/2012/nnoupb/ILSVRC2012_img_test.tar 
 
 
 https://github.com/david8862/keras-YOLOv3-model-set/blob/master/common/backbones/imagenet_training/README.md
   preprocess_imagenet_train_data.py 
   preprocess_imagenet_validation_data.py
-  
+
+https://github.com/fh295/semanticCNN/tree/master/imagenet_labels
+
+<!-- https://www.cyberciti.biz/faq/list-the-contents-of-a-tar-or-targz-file/ -->
+tar -ztvf my-data.tar.gz
+tar -tvf my-data.tar.gz
+tar -tvf my-data.tar.gz 'search-pattern'
+
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ tar -tvf ILSVRC2012_img_train_t3.tar
+
+
+https://github.com/leondgarse/keras_cv_attention_models/discussions/9
+
+
+Has files but sizes not the same
+https://hyper.ai/datasets/4889
+
 
 
 
