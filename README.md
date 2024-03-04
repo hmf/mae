@@ -1090,7 +1090,7 @@ tmpfs                                12G  8.2k   12G   1% /run/user/1002
 
 <!--- cSpell:disable --->
 ```shell
-ubuntu@cese-produtech3r:~$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/test_images.tar.gz
+ubuntu@cese-produtech3r:~$ wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/test_images.tar.gz
 
 ubuntu@cese-produtech3r:~$ time tar -xzf test_images.tar.gz -C /mnt/data/test
 
@@ -1122,15 +1122,40 @@ tmpfs                                12G  8.2k   12G   1% /run/user/1002
 ```
 <!--- cSpell:enable --->
 
+The test dataset cannot be extracted. Their is no space left:
+
 <!--- cSpell:disable --->
 ```shell
+ubuntu@cese-produtech3r:~$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/val_images.tar.gz
+
+ubuntu@cese-produtech3r:~$ time tar -xzf val_images.tar.gz -C /mnt/data/val
+```
+<!--- cSpell:enable --->
+
+Example of errors: 
+
+<!--- cSpell:disable --->
+```shell
+tar: ILSVRC2012_val_00039116_n03763968.JPEG: Cannot write: No space left on device
+tar: ILSVRC2012_val_00023978_n03942813.JPEG: Cannot open: No space left on device
+tar: ILSVRC2012_val_00001960_n03445924.JPEG: Cannot write: No space left on device
+tar: ILSVRC2012_val_00012609_n03873416.JPEG: Cannot write: No space left on device
 ```
 <!--- cSpell:enable --->
 
 
-
 <!--- cSpell:disable --->
 ```shell
+ubuntu@cese-produtech3r:~$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   44G   61G  42% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  443G  657G  41% /mnt/data02
+/dev/vdb                            179G  170G     0 100% /mnt/data
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
 ```
 <!--- cSpell:enable --->
 
