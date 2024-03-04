@@ -1006,6 +1006,51 @@ ubuntu@cese-produtech3r:/mnt/data/train$ rm *.JPEG
 -bash: /usr/bin/rm: Argument list too long
 
 
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xzf train_images_0.tar.gz
+
+real	3m16.906s
+user	2m28.103s
+sys	0m50.372s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time rm train_images_0.tar.gz 
+
+real	0m1.317s
+user	0m0.001s
+sys	0m1.305s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xzf train_images_1.tar.gz
+
+real	2m46.793s
+user	2m23.159s
+sys	0m45.031s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time rm train_images_1.tar.gz 
+
+real	0m0.662s
+user	0m0.001s
+sys	0m0.650s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xzf train_images_2.tar.gz
+
+real	2m31.879s
+user	2m17.275s
+sys	0m45.706s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time rm train_images_2.tar.gz 
+
+real	0m3.082s
+user	0m0.000s
+sys	0m3.065s
+```
+<!--- cSpell:enable --->
+
+
+
+
+
+
 
 <!--- cSpell:disable --->
 ```shell
