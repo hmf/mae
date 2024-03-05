@@ -1257,6 +1257,83 @@ https://hyper.ai/datasets/4889
 https://huggingface.co/datasets/imagenet-1k/blob/main/README.md
 
 
+Wget Resume Broken Download
+https://www.cyberciti.biz/tips/wget-resume-broken-download.html
+use the `-c` or `--continue` option
+
+wget -c https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train.tar --no-check-certificate
+
+ETA 113h14m
+
+https://www.tecmint.com/split-large-tar-into-multiple-files-of-certain-size/
+<!--- cSpell:disable --->
+```shell
+$ tar -cvjf home.tar.bz2 /home/aaronkilik/Documents/* 
+$ ls -lh home.tar.bz2
+$ split -b 10M home.tar.bz2 "home.tar.bz2.part"
+$ ls -lh home.tar.bz2.parta*
+$ tar -cvzf - data/* | split -b 150M - "downloads-part"
+$ cat home.tar.bz2.parta* > backup.tar.gz.joined
+```
+<!--- cSpell:enable --->
+
+<!-- https://www.linkedin.com/advice/3/how-do-you-split-large-tar-archive-smaller-chunks -->
+> NOTE: use the -d option with the split command to use numeric suffixes instead of alphabetic ones for the output files. 
+
+
+<!--- cSpell:disable --->
+```shell
+$ tar cvzf - dir/ | split --bytes=200MB - sda1.backup.tar.gz.
+$ cat sda1.backup.tar.gz.* | tar xzvf -
+```
+<!--- cSpell:enable --->
+
+
+<!-- https://unix.stackexchange.com/questions/61774/create-a-tar-archive-split-into-blocks-of-a-maximum-size -->
+<!--- cSpell:disable --->
+```shell
+$ tar -cv --tape-length=2097000 --file=my_archive-{00..50}.tar file1 file2 dir3
+$ tar -czv --tape-length=2097000 --file=my_archive-{00..50}.tar.gz file1 file2 dir3
+$ tarcat my_archive-*.tar | tar -xf -
+```
+<!--- cSpell:enable --->
+
+Do not use multi volume tar archives. 
+
+<!-- https://www.thewebhelp.com/linux/creating-multivolume-tar-files/ -->
+
+<!--- cSpell:disable --->
+```shell
+$ tar -cML 1258291 -f my_documents.tar my_documents (interactive)
+$ tar -xMf my_documents.tar (interactive)
+$ tar xvfM yast2backup.1.tar yast2backup2.tar yast2backup3.tar
+$ for i in `ls *.tar`;do tar xvf $i;done
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+$ tar -c -L1G -H posix -f /backup/somearchive.tar -F '/usr/bin/tar-volume.sh' somefolder
+```
+<!--- cSpell:enable --->
+
+> NOTE: Note that if you just extract 1 single volume, there may be incomplete files which were split at the beginning or end of the archive to another volume. Tar will create a subfolder called GNUFileParts.xxxx/filename which contain the incomplete file(s).
+
+<!-- linux split tar on file boundary -->
+<!-- https://superuser.com/questions/189691/how-to-split-a-tar-file-into-smaller-parts-at-file-boundaries -->
+<!-- https://github.com/AQUAOSOTech/tarsplitter 
+      Binaries available -->
+<!-- GO: https://github.com/messiaen/tarsplitter -->
+<!-- https://github.com/libarchive/libarchive#readme -->
+<!--    https://www.libarchive.org/ 
+        Has binaries for windows only, make install -->
+<!-- https://laramatic.com/how-to-install-tar-split-in-debian-ubuntu-kali-fedora-and-raspbian/ -->
+
+<!-- Python
+https://www.dmuth.org/tarsplit-a-utility-to-split-tarballs-into-multiple-parts/
+https://github.com/dmuth/tarsplit
+https://raw.githubusercontent.com/dmuth/tarsplit/main/tarsplit
+-->
 
 <!--- cSpell:disable --->
 ```shell
