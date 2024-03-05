@@ -1265,6 +1265,7 @@ wget -c https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train.tar --no-che
 
 ETA 113h14m
 
+https://help.ubuntu.com/community/BackupYourSystem/TAR
 https://www.tecmint.com/split-large-tar-into-multiple-files-of-certain-size/
 <!--- cSpell:disable --->
 ```shell
@@ -1294,6 +1295,7 @@ $ cat sda1.backup.tar.gz.* | tar xzvf -
 ```shell
 $ tar -cv --tape-length=2097000 --file=my_archive-{00..50}.tar file1 file2 dir3
 $ tar -czv --tape-length=2097000 --file=my_archive-{00..50}.tar.gz file1 file2 dir3
+$ tar --tape-length=1048576 -cMv --file=tar_archive.{tar,tar-{2..100}} backup.tar.lzma
 $ tarcat my_archive-*.tar | tar -xf -
 ```
 <!--- cSpell:enable --->
@@ -1334,6 +1336,18 @@ https://www.dmuth.org/tarsplit-a-utility-to-split-tarballs-into-multiple-parts/
 https://github.com/dmuth/tarsplit
 https://raw.githubusercontent.com/dmuth/tarsplit/main/tarsplit
 -->
+
+<!--
+https://unix.stackexchange.com/questions/504610/tar-splitting-into-standalone-volumes
+http://linuxsay.com/t/how-to-create-tar-multi-volume-by-using-the-automatic-rename-script-provided-in-the-manual-of-gnu-tar/2862
+-->
+
+<!--- cSpell:disable --->
+```shell
+$ tar -c -L1G -H posix -f /backup/somearchive.tar -F '/usr/bin/tar-volume.sh' somefolder
+```
+<!--- cSpell:enable --->
+
 
 <!--- cSpell:disable --->
 ```shell
