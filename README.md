@@ -1246,7 +1246,7 @@ Here are some [scripts](https://github.com/david8862/keras-YOLOv3-model-set/blob
 
 This [link](https://github.com/fh295/semanticCNN/tree/master/imagenet_labels) contains the class mappings but be useful. For example checking the results of the test data set. 
 
-[Notes](https://www.cyberciti.biz/faq/list-the-contents-of-a-tar-or-targz-file/) on how to extract compressed and uncompressed TAR file:
+[Notes](https://www.cyberciti.biz/faq/list-the-contents-of-a-tar-or-targz-file/) on how to list the contents compressed and uncompressed TAR file:
 <!--- cSpell:disable --->
 ```shell
 tar -ztvf my-data.tar.gz
@@ -1334,47 +1334,37 @@ $ tar -c -L1G -H posix -f /backup/somearchive.tar -F '/usr/bin/tar-volume.sh' so
 
 > **NOTE**: Note that if you just extract 1 single volume, there may be incomplete files which were split at the beginning or end of the archive to another volume. Tar will create a subfolder called GNUFileParts.xxxx/filename which contain the incomplete file(s).
 
-<!-- linux split tar on file boundary -->
-<!-- https://superuser.com/questions/189691/how-to-split-a-tar-file-into-smaller-parts-at-file-boundaries -->
-<!-- https://github.com/AQUAOSOTech/tarsplitter 
-      Binaries available -->
-<!-- GO: https://github.com/messiaen/tarsplitter -->
-<!-- https://github.com/libarchive/libarchive#readme -->
-<!--    https://www.libarchive.org/ 
-        Has binaries for windows only, make install -->
-<!-- https://laramatic.com/how-to-install-tar-split-in-debian-ubuntu-kali-fedora-and-raspbian/ -->
-
-<!-- Python
-https://www.dmuth.org/tarsplit-a-utility-to-split-tarballs-into-multiple-parts/
-https://github.com/dmuth/tarsplit
-https://raw.githubusercontent.com/dmuth/tarsplit/main/tarsplit
--->
-
 <!--
 https://unix.stackexchange.com/questions/504610/tar-splitting-into-standalone-volumes
 http://linuxsay.com/t/how-to-create-tar-multi-volume-by-using-the-automatic-rename-script-provided-in-the-manual-of-gnu-tar/2862
+https://www.dmuth.org/tarsplit-a-utility-to-split-tarballs-into-multiple-parts/
 -->
 
-Looked for utilities that allowed us to split the single downloaded TAR archive at the boundary level. 
+1. [How to split a tar file into smaller parts at file boundaries?](https://superuser.com/questions/189691/how-to-split-a-tar-file-into-smaller-parts-at-file-boundaries)
+   1. [tarsplitter](https://github.com/AQUAOSOTech/tarsplitter ) - Go code. binaries available
+   1. [tarsplitter](https://github.com/messiaen/tarsplitter) - Go with makefile
+   1. [lib archive](https://github.com/libarchive/libarchive)
+      1. [lib archive]( www.libarchive.org)
+      1. Has binaries for windows only, make install for Linux
+   1. [Tarsplit: A Utility to Split Tarballs Into Multiple Parts](https://www.dmuth.org/tarsplit-a-utility-to-split-tarballs-into-multiple-parts/)
+      1. https://github.com/dmuth/tarsplit (Python)
+      1. https://raw.githubusercontent.com/dmuth/tarsplit/main/tarsplit
+
+These are the data files we have:
 
 <!--- cSpell:disable --->
 ```shell
-```
-<!--- cSpell:enable --->
-
-<!--- cSpell:disable --->
-```shell
-```
-<!--- cSpell:enable --->
-
-
-
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ ls -lh *.tar
 -rw-rw-r-- 1 hmf hmf 728M jul  4  2012 ILSVRC2012_img_train_t3.tar
 -rw-rw-r-- 1 hmf hmf 138G jun 14  2012 ILSVRC2012_img_train.tar
 -rw-rw-r-- 1 hmf hmf 6,3G jun 14  2012 ILSVRC2012_img_val.tar
+```
+<!--- cSpell:enable --->
 
+Make sure we will not delete these by mistake:
 
+<!--- cSpell:disable --->
+```shell
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ chmod u-w *.tar
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ ls -lh *.tar
 -r--rw-r-- 1 hmf hmf 728M jul  4  2012 ILSVRC2012_img_train_t3.tar
@@ -1385,16 +1375,58 @@ hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ ls -lh *.tar
 -r--r--r-- 1 hmf hmf 728M jul  4  2012 ILSVRC2012_img_train_t3.tar
 -r--r--r-- 1 hmf hmf 138G jun 14  2012 ILSVRC2012_img_train.tar
 -r--r--r-- 1 hmf hmf 6,3G jun 14  2012 ILSVRC2012_img_val.tar
+```
+<!--- cSpell:enable --->
+
+Make sure we have the *"labelled"* data (1000 archives):
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ tar -tvf ILSVRC2012_img_train.tar 
+-rw-r--r-- 2016/imagenet 157368320 2012-06-14 09:45 n01440764.tar
+-rw-r--r-- 2016/imagenet 133662720 2012-06-14 09:45 n01443537.tar
+-rw-r--r-- 2016/imagenet 129822720 2012-06-14 09:45 n01484850.tar
+-rw-r--r-- 2016/imagenet 114104320 2012-06-14 09:46 n01491361.tar
+-rw-r--r-- 2016/imagenet 138905600 2012-06-14 09:46 n01494475.tar
+-rw-r--r-- 2016/imagenet 139069440 2012-06-14 09:46 n01496331.tar
+-rw-r--r-- 2016/imagenet 178370560 2012-06-14 09:46 n01498041.tar
+...
+-rw-r--r-- 2016/imagenet 193003520 2012-06-14 11:42 n13054560.tar
+-rw-r--r-- 2016/imagenet 157122560 2012-06-14 11:42 n13133613.tar
+-rw-r--r-- 2016/imagenet 131082240 2012-06-14 11:42 n15075141.tar
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ tar -tvf ILSVRC2012_img_train.tar | wc -l 
+1000
+```
+<!--- cSpell:enable --->
+
+Download the [binary of tar-splitter](https://github.com/AQUAOSOTech/tarsplitter/releases/tag/v2.2.0):
+Download the [python version of a tar-splitter]https://raw.githubusercontent.com/dmuth/tarsplit/main/tarsplit
+Move these utilities to the dataset folder:
+
+<!--- cSpell:disable --->
+```shell
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ mv ~/Downloads/tarsplitter_linux .
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ mv ~/Downloads/tarsplit.sh  .
+```
+<!--- cSpell:enable --->
 
+Create a copy of the data that we will use to split:
+
+<!--- cSpell:disable --->
+```shell
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ mkdir imagenet-1kb
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cp ILSVRC2012_img_train.tar imagenet-1kb
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cp tarsplitter_linux imagenet-1kb/
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cd imagenet-1kb/
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ ls
 ILSVRC2012_img_train.tar  tarsplitter_linux
+```
+<!--- cSpell:enable --->
 
+Now split the data into 6 archives so that they may be less that 25GB each:
+
+<!--- cSpell:disable --->
+```shell
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time ./tarsplitter_linux -i ILSVRC2012_img_train.tar -m split -o ./ILSVRC2012_img_train_ -p 6
 ILSVRC2012_img_train.tar is 147897477120 bytes, splitting into 6 parts of 24649579520 bytes
 First new archive is /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_0.tar
@@ -1409,7 +1441,13 @@ All done
 real	3m38,949s
 user	0m7,621s
 sys	3m14,750s
+```
+<!--- cSpell:enable --->
 
+This is what we have at this point:
+
+<!--- cSpell:disable --->
+```shell
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ ls -lh
 total 276G
 -rw-rw-r-- 1 hmf hmf  24G mar  7 15:23 ILSVRC2012_img_train_0.tar
@@ -1420,6 +1458,26 @@ total 276G
 -rw-rw-r-- 1 hmf hmf  23G mar  7 15:26 ILSVRC2012_img_train_5.tar
 -r--r--r-- 1 hmf hmf 138G mar  7 15:16 ILSVRC2012_img_train.tar
 -rwxrwxr-x 1 hmf hmf 1,8M mar  7 15:16 tarsplitter_linux
+```
+<!--- cSpell:enable --->
+
+First remove the data from the full disk:
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+
+
+
+
 
 
 
