@@ -988,23 +988,6 @@ total 136G
 <!--- cSpell:enable --->
 
 
-time tar -xzf train_images_0.tar.gz
-
-ubuntu@cese-produtech3r:/mnt/data/train$ df -H
-Filesystem                          Size  Used Avail Use% Mounted on
-tmpfs                                12G  1.4M   12G   1% /run
-/dev/vda1                           104G   68G   37G  65% /
-tmpfs                                60G     0   60G   0% /dev/shm
-tmpfs                               5.3M     0  5.3M   0% /run/lock
-/dev/vda15                          110M  6.4M  104M   6% /boot/efi
-10.55.0.23:/mnt/pool03/cese/data02  1.1T  443G  657G  41% /mnt/data02
-/dev/vdb                            179G  170G     0 100% /mnt/data
-tmpfs                                12G  8.2k   12G   1% /run/user/1002
-ubuntu@cese-produtech3r:/mnt/data/train$ ls -l | wc -l
-214766
-ubuntu@cese-produtech3r:/mnt/data/train$ rm *.JPEG
--bash: /usr/bin/rm: Argument list too long
-
 
 <!--- cSpell:disable --->
 ```shell
@@ -1090,6 +1073,17 @@ tmpfs                                12G  8.2k   12G   1% /run/user/1002
 
 <!--- cSpell:disable --->
 ```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -l | wc -l
+214766
+ubuntu@cese-produtech3r:/mnt/data/train$ rm *.JPEG
+-bash: /usr/bin/rm: Argument list too long
+```
+<!--- cSpell:enable --->
+
+Get and expand the test dataset locally:
+
+<!--- cSpell:disable --->
+```shell
 ubuntu@cese-produtech3r:~$ wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/test_images.tar.gz
 
 ubuntu@cese-produtech3r:~$ time tar -xzf test_images.tar.gz -C /mnt/data/test
@@ -1143,6 +1137,7 @@ tar: ILSVRC2012_val_00012609_n03873416.JPEG: Cannot write: No space left on devi
 ```
 <!--- cSpell:enable --->
 
+Space:
 
 <!--- cSpell:disable --->
 ```shell
@@ -1178,9 +1173,9 @@ ubuntu@cese-produtech3r:/mnt/data$ sudo du -sh *
 ```
 <!--- cSpell:enable --->
 
-That is a total of 158.6Gb. Why does t not fit in 179G? Why  does the OS report 170GB used?
+That is a total of 158.6Gb. Why does t not fit in 179G? Why does the OS report 170GB used?
 
-Add the following bid to the Docker image:
+Add the following bind to the Docker image:
 
 <!--- cSpell:disable --->
 ```json
@@ -1213,8 +1208,7 @@ FileNotFoundError: Couldn't find any class folder in /mnt/data/train.
 ```
 <!--- cSpell:enable --->
 
-https://stackoverflow.com/questions/69199273/torchvision-imagefolder-could-not-find-any-class-folder
-https://discuss.pytorch.org/t/filenotfounderror-couldnt-find-any-class-folder/138578
+The [issue](https://stackoverflow.com/questions/69199273/torchvision-imagefolder-could-not-find-any-class-folder) is that the data previously downloaded does does [not split the classes](https://discuss.pytorch.org/t/filenotfounderror-couldnt-find-any-class-folder/138578) into te expected folders. The following links provide more information and scripts to pepare the data as required:
 
 1. https://stackoverflow.com/questions/77328205/how-to-extract-the-files-of-imagenet-1k-dataset-for-each-class-separately
   1. https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4
@@ -1222,51 +1216,67 @@ https://discuss.pytorch.org/t/filenotfounderror-couldnt-find-any-class-folder/13
      1. https://github.com/facebookarchive/fb.resnet.torch/blob/master/INSTALL.md
 
 
+First we download the files that include a training dataset that has already been split into the required classes (note that the test dataset does not exist). We use a *hidden* URL for this:
+
+<!--- cSpell:disable --->
+```shell
 wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_val.tar --no-check-certificate
 wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train_t3.tar --no-check-certificate
 wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train.tar --no-check-certificate
 wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_test.tar --no-check-certificate DOES NOT EXIST
+```
+<!--- cSpell:enable --->
 
+We download the test images form this URL:
+
+<!--- cSpell:disable --->
+```shell
 wget http://www.image-net.org/challenges/LSVRC/2012/nnoupb/ILSVRC2012_img_test.tar
 wget http://www.image-net.org/challenges/LSVRC/2012/nnoupb/ILSVRC2012_img_test.tar 
+```
+<!--- cSpell:enable --->
 
-
-https://github.com/david8862/keras-YOLOv3-model-set/blob/master/common/backbones/imagenet_training/README.md
+Here are some [scripts](https://github.com/david8862/keras-YOLOv3-model-set/blob/master/common/backbones/imagenet_training/README.md) that are used for preparing the  data:
+<!--- cSpell:disable --->
+```shell
   preprocess_imagenet_train_data.py 
   preprocess_imagenet_validation_data.py
+```
+<!--- cSpell:enable --->
 
-https://github.com/fh295/semanticCNN/tree/master/imagenet_labels
+This [link](https://github.com/fh295/semanticCNN/tree/master/imagenet_labels) contains the class mappings but be useful. For example checking the results of the test data set. 
 
-<!-- https://www.cyberciti.biz/faq/list-the-contents-of-a-tar-or-targz-file/ -->
+[Notes](https://www.cyberciti.biz/faq/list-the-contents-of-a-tar-or-targz-file/) on how to extract compressed and uncompressed TAR file:
+<!--- cSpell:disable --->
+```shell
 tar -ztvf my-data.tar.gz
 tar -tvf my-data.tar.gz
 tar -tvf my-data.tar.gz 'search-pattern'
+```
+<!--- cSpell:enable --->
 
+Example of extracting the dataset:
+
+<!--- cSpell:disable --->
+```shell
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ tar -tvf ILSVRC2012_img_train_t3.tar
+```
+<!--- cSpell:enable --->
 
+This [link](https://hyper.ai/datasets/4889) has files but the sizes do match with the [HuggingFace data](https://huggingface.co/datasets/imagenet-1k/blob/main/README.md). We record it here in case we need data from other years. 
 
-https://github.com/leondgarse/keras_cv_attention_models/discussions/9
+One of the issues we have with downloading the data is that it takes a long time and we may need to interrupt it. We can use `wget` and [resume broken downloads](https://www.cyberciti.biz/tips/wget-resume-broken-download.html) using the `-c` or `--continue` option. Here is an example:
 
-
-Has files but sizes not the same
-https://hyper.ai/datasets/4889
-
-
-
-
-https://huggingface.co/datasets/imagenet-1k/blob/main/README.md
-
-
-Wget Resume Broken Download
-https://www.cyberciti.biz/tips/wget-resume-broken-download.html
-use the `-c` or `--continue` option
-
+<!--- cSpell:disable --->
+```shell
 wget -c https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train.tar --no-check-certificate
 
 ETA 113h14m
+```
+<!--- cSpell:enable --->
 
-https://help.ubuntu.com/community/BackupYourSystem/TAR
-https://www.tecmint.com/split-large-tar-into-multiple-files-of-certain-size/
+we can [split](https://www.tecmint.com/split-large-tar-into-multiple-files-of-certain-size/) the a [TAR archive](https://help.ubuntu.com/community/BackupYourSystem/TAR). Here are a set of examples that show creating a single archive, splitting it and then joining and extracting the content:
+
 <!--- cSpell:disable --->
 ```shell
 $ tar -cvjf home.tar.bz2 /home/aaronkilik/Documents/* 
@@ -1278,10 +1288,11 @@ $ cat home.tar.bz2.parta* > backup.tar.gz.joined
 ```
 <!--- cSpell:enable --->
 
-<!-- https://www.linkedin.com/advice/3/how-do-you-split-large-tar-archive-smaller-chunks -->
-> NOTE: use the -d option with the split command to use numeric suffixes instead of alphabetic ones for the output files. 
+> **NOTE 1**: the `split` command does not split archives at file boundaries. This means a file may be spit between two split archives. The result is that we cannot safely extract a single split archive because we may get an incomplete file. More information below. 
 
+> **NOTE 2**: use the [-d option](https://www.linkedin.com/advice/3/how-do-you-split-large-tar-archive-smaller-chunks) with the split command to use numeric suffixes instead of alphabetic ones for the output files. 
 
+Here is an example using a pipe to combine and extract multiple split TAR archives:
 <!--- cSpell:disable --->
 ```shell
 $ tar cvzf - dir/ | split --bytes=200MB - sda1.backup.tar.gz.
@@ -1289,8 +1300,8 @@ $ cat sda1.backup.tar.gz.* | tar xzvf -
 ```
 <!--- cSpell:enable --->
 
+We can also create [**multi-volume TAR archives**](https://unix.stackexchange.com/questions/61774/create-a-tar-archive-split-into-blocks-of-a-maximum-size). Here is an example (usually volumes are renamed with character suffixes but here we override this to generate numeric suffixes):
 
-<!-- https://unix.stackexchange.com/questions/61774/create-a-tar-archive-split-into-blocks-of-a-maximum-size -->
 <!--- cSpell:disable --->
 ```shell
 $ tar -cv --tape-length=2097000 --file=my_archive-{00..50}.tar file1 file2 dir3
@@ -1300,9 +1311,9 @@ $ tarcat my_archive-*.tar | tar -xf -
 ```
 <!--- cSpell:enable --->
 
-Do not use multi volume tar archives. 
+> **NOTE**: We should not use multi volume tar archives because the multi volume archives are also **not split at file boundaries**.
 
-<!-- https://www.thewebhelp.com/linux/creating-multivolume-tar-files/ -->
+Here are a few example of [extracting multi volume tar archives](https://www.thewebhelp.com/linux/creating-multivolume-tar-files):
 
 <!--- cSpell:disable --->
 ```shell
@@ -1313,13 +1324,15 @@ $ for i in `ls *.tar`;do tar xvf $i;done
 ```
 <!--- cSpell:enable --->
 
+The renaming of files may also be done using a script:
+
 <!--- cSpell:disable --->
 ```shell
 $ tar -c -L1G -H posix -f /backup/somearchive.tar -F '/usr/bin/tar-volume.sh' somefolder
 ```
 <!--- cSpell:enable --->
 
-> NOTE: Note that if you just extract 1 single volume, there may be incomplete files which were split at the beginning or end of the archive to another volume. Tar will create a subfolder called GNUFileParts.xxxx/filename which contain the incomplete file(s).
+> **NOTE**: Note that if you just extract 1 single volume, there may be incomplete files which were split at the beginning or end of the archive to another volume. Tar will create a subfolder called GNUFileParts.xxxx/filename which contain the incomplete file(s).
 
 <!-- linux split tar on file boundary -->
 <!-- https://superuser.com/questions/189691/how-to-split-a-tar-file-into-smaller-parts-at-file-boundaries -->
@@ -1342,11 +1355,91 @@ https://unix.stackexchange.com/questions/504610/tar-splitting-into-standalone-vo
 http://linuxsay.com/t/how-to-create-tar-multi-volume-by-using-the-automatic-rename-script-provided-in-the-manual-of-gnu-tar/2862
 -->
 
+Looked for utilities that allowed us to split the single downloaded TAR archive at the boundary level. 
+
 <!--- cSpell:disable --->
 ```shell
-$ tar -c -L1G -H posix -f /backup/somearchive.tar -F '/usr/bin/tar-volume.sh' somefolder
 ```
 <!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+
+
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ ls -lh *.tar
+-rw-rw-r-- 1 hmf hmf 728M jul  4  2012 ILSVRC2012_img_train_t3.tar
+-rw-rw-r-- 1 hmf hmf 138G jun 14  2012 ILSVRC2012_img_train.tar
+-rw-rw-r-- 1 hmf hmf 6,3G jun 14  2012 ILSVRC2012_img_val.tar
+
+
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ chmod u-w *.tar
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ ls -lh *.tar
+-r--rw-r-- 1 hmf hmf 728M jul  4  2012 ILSVRC2012_img_train_t3.tar
+-r--rw-r-- 1 hmf hmf 138G jun 14  2012 ILSVRC2012_img_train.tar
+-r--rw-r-- 1 hmf hmf 6,3G jun 14  2012 ILSVRC2012_img_val.tar
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ chmod g-w *.tar
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ ls -lh *.tar
+-r--r--r-- 1 hmf hmf 728M jul  4  2012 ILSVRC2012_img_train_t3.tar
+-r--r--r-- 1 hmf hmf 138G jun 14  2012 ILSVRC2012_img_train.tar
+-r--r--r-- 1 hmf hmf 6,3G jun 14  2012 ILSVRC2012_img_val.tar
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ mv ~/Downloads/tarsplitter_linux .
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ mv ~/Downloads/tarsplit.sh  .
+
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ mkdir imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cp ILSVRC2012_img_train.tar imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cp tarsplitter_linux imagenet-1kb/
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cd imagenet-1kb/
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ ls
+ILSVRC2012_img_train.tar  tarsplitter_linux
+
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time ./tarsplitter_linux -i ILSVRC2012_img_train.tar -m split -o ./ILSVRC2012_img_train_ -p 6
+ILSVRC2012_img_train.tar is 147897477120 bytes, splitting into 6 parts of 24649579520 bytes
+First new archive is /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_0.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_1.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_2.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_3.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_4.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_5.tar
+Done reading input archive
+All done
+
+real	3m38,949s
+user	0m7,621s
+sys	3m14,750s
+
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ ls -lh
+total 276G
+-rw-rw-r-- 1 hmf hmf  24G mar  7 15:23 ILSVRC2012_img_train_0.tar
+-rw-rw-r-- 1 hmf hmf  23G mar  7 15:24 ILSVRC2012_img_train_1.tar
+-rw-rw-r-- 1 hmf hmf  23G mar  7 15:24 ILSVRC2012_img_train_2.tar
+-rw-rw-r-- 1 hmf hmf  24G mar  7 15:25 ILSVRC2012_img_train_3.tar
+-rw-rw-r-- 1 hmf hmf  24G mar  7 15:26 ILSVRC2012_img_train_4.tar
+-rw-rw-r-- 1 hmf hmf  23G mar  7 15:26 ILSVRC2012_img_train_5.tar
+-r--r--r-- 1 hmf hmf 138G mar  7 15:16 ILSVRC2012_img_train.tar
+-rwxrwxr-x 1 hmf hmf 1,8M mar  7 15:16 tarsplitter_linux
+
+
+
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time ./tarsplitter_linux -i ILSVRC2012_img_train.tar -m split -o ./ILSVRC2012_img_train_ -p 6
+ILSVRC2012_img_train.tar is 147897477120 bytes, splitting into 6 parts of 24649579520 bytes
+First new archive is /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_0.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_1.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_2.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_3.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_4.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_5.tar
+Done reading input archive
+All done
+
+real	3m38,949s
+user	0m7,621s
+sys	3m14,750s
+
+
+
 
 
 <!--- cSpell:disable --->
