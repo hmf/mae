@@ -1484,28 +1484,74 @@ scp train_images_0.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/
 time scp ILSVRC2012_img_train_0.tar ubuntu@10.61.14.231:/mnt/data/train
 
 
+cd /mnt/data/train
+ls 
+time tar -xf ILSVRC2012_img_train_0.tar
+
+
 <!--- cSpell:disable --->
 ```shell
 hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_0.tar ubuntu@10.61.14.231:/mnt/data/train
+ILSVRC2012_img_train_0.tar                                                                                                    100%   23GB   9.3MB/s   42:07    
+
+real	42m8,200s
+user	2m50,909s
+sys	2m17,149s
 ```
 <!--- cSpell:enable --->
-
-
 
 
 
 
 <!--- cSpell:disable --->
 ```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ cd ~
+ubuntu@cese-produtech3r:~$ cd /mnt/data/train
+ubuntu@cese-produtech3r:/mnt/data/train$ ls
+ILSVRC2012_img_train_0.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_0.tar 
+
+real	0m15.488s
+user	0m0.366s
+sys	0m14.660s
+ubuntu@cese-produtech3r:/mnt/data/train$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   55G   50G  53% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  470G  631G  43% /mnt/data02
+/dev/vdb                            179G   70G  101G  41% /mnt/data
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
 ```
 <!--- cSpell:enable --->
 
+We now have a set of TAR archives. First remove the transferred archive
+
+
+https://unix.stackexchange.com/questions/19840/extract-multiple-tar-gz-files-with-a-single-tar-call
+for file in *.tar.gz; do tar -zxf "$file"; done
+
+https://www.cyberciti.biz/faq/how-to-extract-multiple-tar-ball-tar-gz-files-in-directory-on-linux-or-unix/
+
+time for file in *.tar; do tar -xf "$file"; done
+
 <!--- cSpell:disable --->
 ```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_0.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ time for file in *.tar; do tar -xf "$file"; done
+
+real	0m22.404s
+user	0m0.805s
+sys	0m18.918s
 ```
 <!--- cSpell:enable --->
+
+
+
 
 <!--- cSpell:disable --->
 ```shell
