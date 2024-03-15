@@ -1465,36 +1465,33 @@ First remove the data from the full disk:
 
 <!--- cSpell:disable --->
 ```shell
+hmf@gandalf:~$ ssh ubuntu@10.61.14.231
+ubuntu@cese-produtech3r:~$ cd /mnt/data/train/
+ubuntu@cese-produtech3r:/mnt/data/train$ rm *
+-bash: /usr/bin/rm: Argument list too long
+ubuntu@cese-produtech3r:/mnt/data/train$ cd ..
+ubuntu@cese-produtech3r:/mnt/data$ rm train/
+rm: cannot remove 'train/': Is a directory
+ubuntu@cese-produtech3r:/mnt/data$ rm -r train/
+ubuntu@cese-produtech3r:/mnt/data$ 
+ubuntu@cese-produtech3r:/mnt/data$ mkdir train
 ```
 <!--- cSpell:enable --->
+
+
+scp train_images_0.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/
+
+time scp ILSVRC2012_img_train_0.tar ubuntu@10.61.14.231:/mnt/data/train
 
 
 <!--- cSpell:disable --->
 ```shell
+hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_0.tar ubuntu@10.61.14.231:/mnt/data/train
 ```
 <!--- cSpell:enable --->
 
-
-
-
-
-
-
-
-hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time ./tarsplitter_linux -i ILSVRC2012_img_train.tar -m split -o ./ILSVRC2012_img_train_ -p 6
-ILSVRC2012_img_train.tar is 147897477120 bytes, splitting into 6 parts of 24649579520 bytes
-First new archive is /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_0.tar
-Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_1.tar
-Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_2.tar
-Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_3.tar
-Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_4.tar
-Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_5.tar
-Done reading input archive
-All done
-
-real	3m38,949s
-user	0m7,621s
-sys	3m14,750s
 
 
 
