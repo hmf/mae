@@ -1621,16 +1621,65 @@ Now onto the 2nd split archive:
 hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_1.tar ubuntu@10.61.14.231:/mnt/data/train
+ILSVRC2012_img_train_1.tar                                                                             100%   23GB   9.2MB/s   42:32    
 
-???
-ILSVRC2012_img_train_0.tar                                                                                                    100%   23GB   9.3MB/s   42:07    
-
-real	42m8,200s
-user	2m50,909s
-sys	2m17,149s
+real	42m33,324s
+user	2m53,527s
+sys	2m12,620s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar
+ILSVRC2012_img_train_1.tar
 ```
 <!--- cSpell:enable --->
 
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+146
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_1.tar 
+
+real	0m34.987s
+user	0m0.586s
+sys	0m21.639s
+ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_1.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar | wc -l
+180
+ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+n02112350_5390.JPEG
+n02112350_6392.JPEG
+n02112350_1935.JPEG
+
+real	0m28.198s
+user	0m1.389s
+sys	0m26.495s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+326
+ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
+326
+
+
+XXXXX
+ubuntu@cese-produtech3r:/mnt/data/train$ time for file in *.tar; do tar -xf "$file"; done
+
+real	0m27.212s
+user	0m1.052s
+sys	0m21.131s
+
+```
+<!--- cSpell:enable --->
+
+146+180 = 326
+
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_1.tar 
+ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_1.tar
+time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time for file in *.tar; do tar -xf "$file"; done
+
+ls n0210*.JPEG
 
 
 
