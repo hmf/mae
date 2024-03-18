@@ -1550,6 +1550,87 @@ sys	0m18.918s
 ```
 <!--- cSpell:enable --->
 
+Unfortunately each class TAR archive does not have its files within a folder. [These scripts](https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4) may allow us to copy to the required folders. [These scripts](https://github.com/fh295/semanticCNN/tree/master/imagenet_labels) may provide us with human readable labels. Here we could opt for the first name in the [labels.txt](https://github.com/fh295/semanticCNN/blob/master/imagenet_labels/labels.txt) or [mapping.txt](https://github.com/fh295/semanticCNN/blob/master/imagenet_labels/mapping.txt) file. Latter seems to be better. 
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ cd /mnt/data/tmp/
+/mnt/data/train
+ubuntu@cese-produtech3r:/mnt/data/train$ 
+
+ubuntu@cese-produtech3r:/mnt/data$ time cp -vi tmp/* train/
+...
+'tmp/n02037110.tar' -> 'train/n02037110.tar'
+'tmp/n02051845.tar' -> 'train/n02051845.tar'
+'tmp/n02056570.tar' -> 'train/n02056570.tar'
+
+real	0m21.389s
+user	0m0.047s
+sys	0m13.627s
+
+ubuntu@cese-produtech3r:/mnt/data$ cd train/
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -l | wc -l
+147
+
+find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+```
+<!--- cSpell:enable --->
+
+The first command below goes through all the current archives, gets the file name and extracts the suffix to that it represents the folder (class) name. The next line counts the number of classes. We see that the first train data archive has 146 classes.
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ find . -name "*.tar" | while read NAME ; do echo "${NAME%.tar}"; done
+ubuntu@cese-produtech3r:/mnt/data/train$ find . -name "*.tar" | while read NAME ; do echo "${NAME%.tar}"; done | wc -l
+146
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+n01768244_2430.JPEG
+n01768244_571.JPEG
+n01768244_5648.JPEG
+n01768244_2437.JPEG
+
+real	0m24.661s
+user	0m1.184s
+sys	0m23.265s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -l | wc -l
+147
+ubuntu@cese-produtech3r:/mnt/data/train$ ls
+n01440764  n01531178  n01614925  n01664065  n01689811  n01729977  n01753488  n01775062  n01818515  n01855672  n01924916  n01981276  n02009912  n02037110
+n01443537  n01532829  n01616318  n01665541  n01692333  n01734418  n01755581  n01776313  n01819313  n01860187  n01930112  n01983481  n02011460  n02051845
+n01484850  n01534433  n01622779  n01667114  n01693334  n01735189  n01756291  n01784675  n01820546  n01871265  n01943899  n01984695  n02012849  n02056570
+n01491361  n01537544  n01629819  n01667778  n01694178  n01737021  n01768244  n01795545  n01824575  n01872401  n01944390  n01985128  n02013706
+n01494475  n01558993  n01630670  n01669191  n01695060  n01739381  n01770081  n01796340  n01828970  n01873310  n01945685  n01986214  n02017213
+n01496331  n01560419  n01631663  n01675722  n01697457  n01740131  n01770393  n01797886  n01829413  n01877812  n01950731  n01990800  n02018207
+n01498041  n01580077  n01632458  n01677366  n01698640  n01742172  n01773157  n01798484  n01833805  n01882714  n01955084  n02002556  n02018795
+n01514668  n01582220  n01632777  n01682714  n01704323  n01744401  n01773549  n01806143  n01843065  n01883070  n01968897  n02002724  n02025239
+n01514859  n01592084  n01641577  n01685808  n01728572  n01748264  n01773797  n01806567  n01843383  n01910747  n01978287  n02006656  n02027492
+n01518878  n01601694  n01644373  n01687978  n01728920  n01749939  n01774384  n01807496  n01847000  n01914609  n01978455  n02007558  n02028035
+n01530575  n01608432  n01644900  n01688243  n01729322  n01751748  n01774750  n01817953  n01855032  n01917289  n01980166  n02009229  n02033041
+```
+<!--- cSpell:enable --->
+
+Now onto the 2nd split archive:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_1.tar ubuntu@10.61.14.231:/mnt/data/train
+
+???
+ILSVRC2012_img_train_0.tar                                                                                                    100%   23GB   9.3MB/s   42:07    
+
+real	42m8,200s
+user	2m50,909s
+sys	2m17,149s
+```
+<!--- cSpell:enable --->
+
 
 
 
