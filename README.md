@@ -1672,16 +1672,13 @@ Now onto the 3nd split archive. First copy the source to the remote node:
 hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_2.tar ubuntu@10.61.14.231:/mnt/data/train
+ILSVRC2012_img_train_2.tar                                                                             100%   23GB   9.2MB/s   42:44    
 
-????
-
-ILSVRC2012_img_train_2.tar                                                                             100%   23GB   9.2MB/s   42:32    
-
-real	42m33,324s
-user	2m53,527s
-sys	2m12,620s
+real	42m45,627s
+user	2m51,629s
+sys	2m13,466s
 ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar
-ILSVRC2012_img_train_1.tar
+ILSVRC2012_img_train_2.tar
 ```
 <!--- cSpell:enable --->
 
@@ -1722,6 +1719,12 @@ ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
 
 Correct: 326+??? = ???
 
+<!--
+ https://stackoverflow.com/questions/26411225/how-to-resume-scp-with-partially-copied-files
+ https://superuser.com/questions/421672/is-there-a-way-to-resume-an-interrupted-scp-of-a-file
+ https://unix.stackexchange.com/questions/652070/how-do-i-resume-an-scp-download
+ https://coderwall.com/p/-zwtyw/resume-stalled-scp-file-transfer-in-linux
+--> 
 
 
 <!--- cSpell:disable --->
