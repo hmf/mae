@@ -1824,14 +1824,14 @@ Now onto the 6th split archive. First copy the source to the remote node:
 hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
 hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_5.tar ubuntu@10.61.14.231:/mnt/data/train
-???
-ILSVRC2012_img_train_4.tar                                                                                                                        100%   23GB  42.1MB/s   09:19    
+ILSVRC2012_img_train_5.tar                                                                                                                        100%   23GB  38.9MB/s   09:56    
 
-real	9m20,705s
-user	1m17,901s
-sys	1m1,227s
+real	9m56,823s
+user	1m55,564s
+sys	1m32,466s
 ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar
 ILSVRC2012_img_train_5.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ mv ILSVRC2012_img_train_5.tar /tmp
 ```
 <!--- cSpell:enable --->
 
@@ -1841,36 +1841,32 @@ Now unpack the archives and move their contents to folders:
 ```shell
 ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */
 ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
-662
-ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_5.tar 
-???
-real	0m45.635s
-user	0m0.520s
-sys	0m18.877s
-ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_5.tar
+843
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf /tmp/ILSVRC2012_img_train_5.tar -C /mnt/data/train
+
+real	0m25.712s
+user	0m0.566s
+sys	0m18.076s
+ubuntu@cese-produtech3r:/mnt/data/train$ rm /tmp/ILSVRC2012_img_train_5.tar 
 ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar | wc -l
-???
-181
+157
 ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
 ...
-???
-n03970156_7708.JPEG
-n03970156_10403.JPEG
-n03970156_8501.JPEG
+n09288635_1710.JPEG
+n09288635_9608.JPEG
+n09288635_12409.JPEG
 
-real	0m29.328s
-user	0m1.689s
-sys	0m25.741s
+real	0m27.035s
+user	0m1.581s
+sys	0m25.156s
 ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
-???
-843
+1000
 ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
-???
-843
+1000
 ```
 <!--- cSpell:enable --->
 
-Correct: 662+181 = 843
+Correct: has all 1k classes
 
 
 
