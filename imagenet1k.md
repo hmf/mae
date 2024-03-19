@@ -1694,8 +1694,19 @@ This means we were not able to add the last **362** images.
 
 <!--- cSpell:disable --->
 ```shell
+ubuntu@cese-produtech3r:/mnt/data$ rm -r test/
+ubuntu@cese-produtech3r:/mnt/data$ cd val
+ubuntu@cese-produtech3r:/mnt/data/val$ wget -qO- https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh | bash
+ubuntu@cese-produtech3r:/mnt/data/val$ ls | wc -l
+1000
+ubuntu@cese-produtech3r:/mnt/data/val$ cd ..
+ubuntu@cese-produtech3r:/mnt/data$ find val/ -name "*.JPEG" | wc -l
+50000
 ```
 <!--- cSpell:enable --->
+
+Took a bout a minute toc reate the classes
+
 
 wget -qO- https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh | bash
 
