@@ -1,0 +1,1726 @@
+# ImageNet 1k
+
+This log shows the steps taken to prepare the Image Net 1k dataset. Here are the links (to download them, you need to be registered in HuggingFace):
+
+1. [ImageNet sample images (minimal, not split)](https://github.com/EliSchwartz/imagenet-sample-images)
+1. [HuggingFace ImageNet 1k](https://huggingface.co/datasets/imagenet-1k)
+   1. [Files and versions](https://huggingface.co/datasets/imagenet-1k/tree/main)
+      1. Entre data directory 
+      1. Download data
+         1. [test_images.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/test_images.tar.gz?download=true)
+         1. [val_images.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/val_images.tar.gz?download=true)
+         1. [train_images_0.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true)
+         1. [train_images_1.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true)
+         1. [train_images_2.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz?download=true)
+         1. [train_images_3.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz?download=true)
+         1. [train_images_4.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz?download=true)
+
+<!--- cSpell:enable --->
+
+The dataset if very large so it is necessary to use the share. First make sure you can access the share via a standard SSH login. Create the destination folder to store the data.
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ cd /mnt/data02/data/src
+ubuntu@cese-produtech3r:/mnt/data02/data/src$ 
+ubuntu@cese-produtech3r:/mnt/data02/data/src$ mkdir imagenet-1k
+```
+<!--- cSpell:enable --->
+
+Make sure you can launch the dev container (Docker). The container must also bind to the share.  
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ ls /mnt/data02/data/cache/imagenet-1k/
+test  train  val
+```
+<!--- cSpell:enable --->
+
+
+Go to local source data path. Copy the source data from the local to the remote node. These files are large so it may take a while. Alternatively download (via curl or wget) the data directly from HuggingFace from the remote shared folder. Here is an example of copying our local files to the remote shared node:
+
+<!--- cSpell:disable --->
+```shell
+usr@node:~$ cd /mnt/ssd2/usr/datasets/computer_vision/imagenet-1k/
+usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ 
+usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp *.py ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+classes.py                                                                                                                                        100%   45KB 761.6KB/s   00:00    
+imagenet-1k.py                                                                                                                                    100% 4721   130.4KB/s   00:00    
+h
+mf@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp gitattributes ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+gitattributes                                                                                                                                     100% 1566    52.0KB/s   00:00    
+usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp README.md ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+README.md                                                                                                                                         100%   83KB   1.1MB/s   00:00    
+usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp test*.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+test_images.tar.gz                                                                                                                                100%   13GB   9.0MB/s   23:55    
+
+usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp val*.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+val_images.tar.gz                                                                                                                                 100% 6358MB   9.4MB/s   11:18    
+
+usr@node:/mnt/ssd2/usr/datasets/computer_vision/imagenet-1k$ scp train_images_0.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/imagenet-1k
+train_images_0.tar.gz                                                                                                                             100%   27GB   9.3MB/s   49:34    
+```
+<!--- cSpell:enable --->
+
+<!-- https://linuxize.com/post/how-to-use-scp-command-to-securely-transfer-files/ -->
+
+Here are the examples of downloading the training data directly from HuggingFace. Note that we require to login to downlaod thr data. The following command will fail:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ wget https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+--2024-02-23 09:57:26--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz?download=true
+Resolving huggingface.co (huggingface.co)... 54.192.95.26, 54.192.95.79, 54.192.95.70, ...
+Connecting to huggingface.co (huggingface.co)|54.192.95.26|:443... connected.
+HTTP request sent, awaiting response... 401 Unauthorized
+
+Username/Password Authentication Failed.
+```
+<!--- cSpell:enable --->
+
+<!-- https://askubuntu.com/questions/29079/how-do-i-provide-a-username-and-password-to-wget -->
+<!--  https://serverfault.com/questions/150282/escape-a-in-the-password-parameter-of-wget -->
+
+Here is a command that provides the user and password. Note the space in front of command so as not to save in history. This prevents others from recalling your sensitive data. This command also fails because HuggingFace uses a token for controlling the access to the data:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz
+--2024-02-23 11:24:13--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
+Resolving huggingface.co (huggingface.co)... 54.192.95.21, 54.192.95.79, 54.192.95.26, ...
+Connecting to huggingface.co (huggingface.co)|54.192.95.21|:443... connected.
+HTTP request sent, awaiting response... 401 Unauthorized
+Unknown authentication scheme.
+
+Username/Password Authentication Failed.
+```
+<!--- cSpell:enable --->
+
+<!-- https://discuss.huggingface.co/t/private-data-and-wget/35115/2 -->
+The next commands show the data download using the token (replace `HF_TOKEN` with your token).
+
+File `train_images_1.tar.gz` (`train_images_0.tar.gz` missing):
+
+ <!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz
+--2024-02-23 11:36:14--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz?download=true
+Resolving huggingface.co (huggingface.co)... 54.192.95.70, 54.192.95.21, 54.192.95.79, ...
+Connecting to huggingface.co (huggingface.co)|54.192.95.70|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/216cd7b2f345ab50cec3bea6090aa10d5ebf351bca3900627be4645e87e873fd?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_1.tar.gz%3B+filename%3D%22train_images_1.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708947375&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk0NzM3NX19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5LzIxNmNkN2IyZjM0NWFiNTBjZWMzYmVhNjA5MGFhMTBkNWViZjM1MWJjYTM5MDA2MjdiZTQ2NDVlODdlODczZmQ%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=Au0tLdPAfyMQWwoZaZa21u4DxnHfZy9DGuYaBhjXGhuNY0OeM0uWMSjjxnmAihMRw3PagX%7Epzyb%7Ey916mOGKrQFIc3oXk1f0WYhOmLWEru6yowyB9kH8d7tE1Ra-nnZ-eVE9kMvT1d3juX%7EsxHmXQ%7EhV6Oo8pJ99DUKjSIvtSIIlln1thXE38HSaPKWj6CeW5x0XSiR58A7Z0X-DW2mWwIAEwLDfybymEcN%7ExQ0l9IA5cW8FfcJhp%7E1aEQfwyjjFHyeNFsCXbZTjtzCSD2LZUA0QvwE4NLVSjzNoUgZ-Mdm0%7EhJc%7Eh8ei7XmHHAbq-qBbEJiRnPD7xCHQPC7dndjCA__&Key-Pair-Id=KVTP0A1DKRTAX [following]
+--2024-02-23 11:36:15--  https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/216cd7b2f345ab50cec3bea6090aa10d5ebf351bca3900627be4645e87e873fd?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_1.tar.gz%3B+filename%3D%22train_images_1.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708947375&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk0NzM3NX19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5LzIxNmNkN2IyZjM0NWFiNTBjZWMzYmVhNjA5MGFhMTBkNWViZjM1MWJjYTM5MDA2MjdiZTQ2NDVlODdlODczZmQ%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=Au0tLdPAfyMQWwoZaZa21u4DxnHfZy9DGuYaBhjXGhuNY0OeM0uWMSjjxnmAihMRw3PagX%7Epzyb%7Ey916mOGKrQFIc3oXk1f0WYhOmLWEru6yowyB9kH8d7tE1Ra-nnZ-eVE9kMvT1d3juX%7EsxHmXQ%7EhV6Oo8pJ99DUKjSIvtSIIlln1thXE38HSaPKWj6CeW5x0XSiR58A7Z0X-DW2mWwIAEwLDfybymEcN%7ExQ0l9IA5cW8FfcJhp%7E1aEQfwyjjFHyeNFsCXbZTjtzCSD2LZUA0QvwE4NLVSjzNoUgZ-Mdm0%7EhJc%7Eh8ei7XmHHAbq-qBbEJiRnPD7xCHQPC7dndjCA__&Key-Pair-Id=KVTP0A1DKRTAX
+Resolving cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)... 108.157.109.99, 108.157.109.59, 108.157.109.91, ...
+Connecting to cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)|108.157.109.99|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 29261436971 (27G) [application/gzip]
+Saving to: ‘train_images_1.tar.gz?download=true’
+
+train_images_1.tar.gz?download=true      100%[================================================================================>]  27.25G  8.50MB/s    in 47m 10s 
+
+2024-02-23 12:23:25 (9.86 MB/s) - ‘train_images_1.tar.gz’ saved [29261436971/29261436971]
+```
+<!--- cSpell:enable --->
+
+File: `train_images_2.tar.gz`
+
+ <!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
+--2024-02-23 12:28:06--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
+Resolving huggingface.co (huggingface.co)... 54.192.95.70, 54.192.95.79, 54.192.95.21, ...
+Connecting to huggingface.co (huggingface.co)|54.192.95.70|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/0a7c68e057bd2c65f9ab4de3458b01c6538eb2fbcc0bce59e77836e82369622f?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_2.tar.gz%3B+filename%3D%22train_images_2.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708946867&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk0Njg2N319LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5LzBhN2M2OGUwNTdiZDJjNjVmOWFiNGRlMzQ1OGIwMWM2NTM4ZWIyZmJjYzBiY2U1OWU3NzgzNmU4MjM2OTYyMmY%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=Kji5s8eJ2o6AGUZJqPhlZWbth776k9DL4Li3C%7E9APxiwtsEtYZ%7EttohS40NOtEaVEc1XbJrLdZybytwdNE77FQ-OtKwvHiMzhWSKOLZhfu0QvuF8TXQtgOiweHpn2ywy0ATRfMl5DYUkGIvRFRfRc72mpjuUsy5SZcqr0djOpd01YT0Q69jOh7EfsWAi57b3QhHPRBdwOLNYyA0U5VsT3oPbwsMD06WtqwIU77ItHuGQNBLj1ULkz7uUhjmlYB2BlfOX1YKfLNsnsT43yg9jSKLGkG49tZdB1JUxgPD1JWU7BdYae2Ql0%7ELwDWMV2WxtYq0KRd7JkXxoiT009MqyVg__&Key-Pair-Id=KVTP0A1DKRTAX [following]
+--2024-02-23 12:28:06--  https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/0a7c68e057bd2c65f9ab4de3458b01c6538eb2fbcc0bce59e77836e82369622f?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_2.tar.gz%3B+filename%3D%22train_images_2.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708946867&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk0Njg2N319LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5LzBhN2M2OGUwNTdiZDJjNjVmOWFiNGRlMzQ1OGIwMWM2NTM4ZWIyZmJjYzBiY2U1OWU3NzgzNmU4MjM2OTYyMmY%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=Kji5s8eJ2o6AGUZJqPhlZWbth776k9DL4Li3C%7E9APxiwtsEtYZ%7EttohS40NOtEaVEc1XbJrLdZybytwdNE77FQ-OtKwvHiMzhWSKOLZhfu0QvuF8TXQtgOiweHpn2ywy0ATRfMl5DYUkGIvRFRfRc72mpjuUsy5SZcqr0djOpd01YT0Q69jOh7EfsWAi57b3QhHPRBdwOLNYyA0U5VsT3oPbwsMD06WtqwIU77ItHuGQNBLj1ULkz7uUhjmlYB2BlfOX1YKfLNsnsT43yg9jSKLGkG49tZdB1JUxgPD1JWU7BdYae2Ql0%7ELwDWMV2WxtYq0KRd7JkXxoiT009MqyVg__&Key-Pair-Id=KVTP0A1DKRTAX
+Resolving cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)... 108.157.109.59, 108.157.109.99, 108.157.109.100, ...
+Connecting to cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)|108.157.109.59|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 29036415239 (27G) [application/gzip]
+Saving to: ‘train_images_2.tar.gz’
+
+train_images_2.tar.gz                    100%[================================================================================>]  27.04G  43.8MB/s    in 10m 28s 
+
+2024-02-23 12:38:35 (44.1 MB/s) - ‘train_images_2.tar.gz’ saved [29036415239/29036415239]
+```
+<!--- cSpell:enable --->
+
+File: `train_images_3.tar.gz`
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz
+--2024-02-23 12:41:56--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz
+Resolving huggingface.co (huggingface.co)... 54.192.95.79, 54.192.95.70, 54.192.95.26, ...
+Connecting to huggingface.co (huggingface.co)|54.192.95.79|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/0cc2290c0f2d2be6a060f7edaef881e76558e5c3fda8ab30c0a3a78021ac5619?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_3.tar.gz%3B+filename%3D%22train_images_3.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708951316&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk1MTMxNn19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5LzBjYzIyOTBjMGYyZDJiZTZhMDYwZjdlZGFlZjg4MWU3NjU1OGU1YzNmZGE4YWIzMGMwYTNhNzgwMjFhYzU2MTk%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=xapeGFm3s2D4bRZ4iasH91N8qLcRXQw4y1YOsJMM0t3q54VfNDziPPcTpboQ0VTKO%7E8%7E6iUH6Q%7EzAZEY7VLuNiT24pcbyPvQ9Ug0Zj2KJ3WcEbDg5JM4%7EMGhGD-SI8wxz7f%7EETxw9DFkGr5Biuz0l0v3HJzW0za4AgQXa4TAWMglWK32bO21qNvWK%7E63SwB2WuBPe25eQ8HS50RnO6xzscx2rbHA-%7EuxYzUR7AFTwm-pGn7icILjgqHQ4-HLTNKiUXBE3ydRLfhebU0E1YB7TWcmWWn7dOKTRdp9i37hzlchhMPTP0flHDW6Ncvw-nAvxj6oRk4KarmOKJa5cX5-NA__&Key-Pair-Id=KVTP0A1DKRTAX [following]
+--2024-02-23 12:41:56--  https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/0cc2290c0f2d2be6a060f7edaef881e76558e5c3fda8ab30c0a3a78021ac5619?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_3.tar.gz%3B+filename%3D%22train_images_3.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708951316&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk1MTMxNn19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5LzBjYzIyOTBjMGYyZDJiZTZhMDYwZjdlZGFlZjg4MWU3NjU1OGU1YzNmZGE4YWIzMGMwYTNhNzgwMjFhYzU2MTk%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=xapeGFm3s2D4bRZ4iasH91N8qLcRXQw4y1YOsJMM0t3q54VfNDziPPcTpboQ0VTKO%7E8%7E6iUH6Q%7EzAZEY7VLuNiT24pcbyPvQ9Ug0Zj2KJ3WcEbDg5JM4%7EMGhGD-SI8wxz7f%7EETxw9DFkGr5Biuz0l0v3HJzW0za4AgQXa4TAWMglWK32bO21qNvWK%7E63SwB2WuBPe25eQ8HS50RnO6xzscx2rbHA-%7EuxYzUR7AFTwm-pGn7icILjgqHQ4-HLTNKiUXBE3ydRLfhebU0E1YB7TWcmWWn7dOKTRdp9i37hzlchhMPTP0flHDW6Ncvw-nAvxj6oRk4KarmOKJa5cX5-NA__&Key-Pair-Id=KVTP0A1DKRTAX
+Resolving cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)... 108.157.109.100, 108.157.109.59, 108.157.109.99, ...
+Connecting to cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)|108.157.109.100|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 29227044756 (27G) [application/gzip]
+Saving to: ‘train_images_3.tar.gz’
+
+train_images_3.tar.gz                    100%[================================================================================>]  27.22G  34.1MB/s    in 12m 3s  
+
+2024-02-23 12:54:00 (38.5 MB/s) - ‘train_images_3.tar.gz’ saved [29227044756/29227044756]
+```
+<!--- cSpell:enable --->
+
+File: `train_images_4.tar.gz`
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$   wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz
+--2024-02-23 12:55:13--  https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz
+Resolving huggingface.co (huggingface.co)... 54.192.95.70, 54.192.95.26, 54.192.95.21, ...
+Connecting to huggingface.co (huggingface.co)|54.192.95.70|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/bf6ab4b53f4b66adbff204ed7f4e36c9c704be6852b407c5147934f2a45c4595?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_4.tar.gz%3B+filename%3D%22train_images_4.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708949015&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk0OTAxNX19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5L2JmNmFiNGI1M2Y0YjY2YWRiZmYyMDRlZDdmNGUzNmM5YzcwNGJlNjg1MmI0MDdjNTE0NzkzNGYyYTQ1YzQ1OTU%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=cg3QRxZQzcLYXeCKRgSea83t2tTlJRp1FqyWEQR-KCoMjZxcNWKaU%7Eo77EVp6JfARfujfn4C5cjAzYdsiMzKfIrLZ7ZwTJ1MDek19HKb2xFH9BN7N6iZVWX%7EXM7INsNNHoYOvSrUn296%7E8egJZrY%7Ecd9MtzIy2ldIqW-3MVKb99FjfiFL2i9uXu5y0x4kCNB0twgcFK28QcwSeXtLN%7EAdKQqdLiZvi85s8jM0u2ws7fI9M0A7i2XddFlZ3JhGo4VsC4QRQ-NHvJGU9SSjBauBRTI2EjkNmT12msyvhbCT9L%7EG7LoW5jQhSYav3feIIWIuKWBPLQFskfpT9OnfKb9Aw__&Key-Pair-Id=KVTP0A1DKRTAX [following]
+--2024-02-23 12:55:13--  https://cdn-lfs.huggingface.co/repos/7b/90/7b90a2edf952802c9c7e2de6b12c802cce10009f1476c3029595e3fc9bbd1fe9/bf6ab4b53f4b66adbff204ed7f4e36c9c704be6852b407c5147934f2a45c4595?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27train_images_4.tar.gz%3B+filename%3D%22train_images_4.tar.gz%22%3B&response-content-type=application%2Fgzip&Expires=1708949015&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwODk0OTAxNX19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5odWdnaW5nZmFjZS5jby9yZXBvcy83Yi85MC83YjkwYTJlZGY5NTI4MDJjOWM3ZTJkZTZiMTJjODAyY2NlMTAwMDlmMTQ3NmMzMDI5NTk1ZTNmYzliYmQxZmU5L2JmNmFiNGI1M2Y0YjY2YWRiZmYyMDRlZDdmNGUzNmM5YzcwNGJlNjg1MmI0MDdjNTE0NzkzNGYyYTQ1YzQ1OTU%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qJnJlc3BvbnNlLWNvbnRlbnQtdHlwZT0qIn1dfQ__&Signature=cg3QRxZQzcLYXeCKRgSea83t2tTlJRp1FqyWEQR-KCoMjZxcNWKaU%7Eo77EVp6JfARfujfn4C5cjAzYdsiMzKfIrLZ7ZwTJ1MDek19HKb2xFH9BN7N6iZVWX%7EXM7INsNNHoYOvSrUn296%7E8egJZrY%7Ecd9MtzIy2ldIqW-3MVKb99FjfiFL2i9uXu5y0x4kCNB0twgcFK28QcwSeXtLN%7EAdKQqdLiZvi85s8jM0u2ws7fI9M0A7i2XddFlZ3JhGo4VsC4QRQ-NHvJGU9SSjBauBRTI2EjkNmT12msyvhbCT9L%7EG7LoW5jQhSYav3feIIWIuKWBPLQFskfpT9OnfKb9Aw__&Key-Pair-Id=KVTP0A1DKRTAX
+Resolving cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)... 108.157.109.99, 108.157.109.100, 108.157.109.59, ...
+Connecting to cdn-lfs.huggingface.co (cdn-lfs.huggingface.co)|108.157.109.99|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 29147095755 (27G) [application/gzip]
+Saving to: ‘train_images_4.tar.gz’
+
+train_images_4.tar.gz                    100%[================================================================================>]  27.14G  35.1MB/s    in 15m 51s 
+
+2024-02-23 13:11:04 (29.2 MB/s) - ‘train_images_4.tar.gz’ saved [29147095755/29147095755]
+```
+<!--- cSpell:enable --->
+
+These are the files copied to the shared folder:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ ls -lh
+total 155G
+-rw-rw-r-- 1 ubuntu root  84K Feb 23 09:46 README.md
+-rw-rw-r-- 1 ubuntu root  46K Feb 23 09:45 classes.py
+-rw-rw-r-- 1 ubuntu root 1.6K Feb 23 09:46 gitattributes
+-rw-rw-r-- 1 ubuntu root 4.7K Feb 23 09:45 imagenet-1k.py
+-rw-rw-r-- 1 ubuntu root  13G Feb 23 10:12 test_images.tar.gz
+-rw-rw-r-- 1 ubuntu root  28G Feb 23 12:11 train_images_0.tar.gz
+-rw-rw-r-- 1 ubuntu root  28G May 24  2022 train_images_1.tar.gz
+-rw-rw-r-- 1 ubuntu root  28G May 24  2022 train_images_2.tar.gz
+-rw-rw-r-- 1 ubuntu root  28G May 24  2022 train_images_3.tar.gz
+-rw-rw-r-- 1 ubuntu root  28G May 24  2022 train_images_4.tar.gz
+-rw-rw-r-- 1 ubuntu root 6.3G Feb 23 12:37 val_images.tar.gz
+```
+<!--- cSpell:enable --->
+
+Create the path were the data will be paced for training and evaluation:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ cd /mnt/data02/data/cache/
+ubuntu@cese-produtech3r:/mnt/data02/data/cache$ mkdir imagenet-1k
+ubuntu@cese-produtech3r:/mnt/data02/data/cache$ cd imagenet-1k/
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k$ mkdir train
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k$ mkdir test
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k$ mkdir val
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k$ 
+```
+<!--- cSpell:enable --->
+
+Copy and extract **test data** (will take some time, avoid using the `-v` (verbose) flag). Here we copy the test data and extract it in the final path used by the code. The archive is removed because it is not required anymore:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ cp test_images.tar.gz /mnt/data02/data/cache/imagenet-1k/test/
+
+ubuntu@cese-produtech3r:~$ cd /mnt/data02/data/cache/imagenet-1k/test/
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ 
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ tar -xvzf test_images.tar.gz 
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ rm test_images.tar.gz 
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/test$ ls -l | wc -l
+100000
+```
+<!--- cSpell:enable --->
+
+Copy and extract **validation data**. The archive is removed because it is not required anymore. We use the `time` command to check the time (taking too long):
+
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ time cp val_images.tar.gz /mnt/data02/data/cache/imagenet-1k/val/
+
+real	5m38.139s
+user	0m0.065s
+sys	0m10.050s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/val$ 
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/val$ time tar -xzf val_images.tar.gz 
+
+real	46m36.322s
+user	1m20.056s
+sys	0m50.401s
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/val$ rm val_images.tar.gz
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/val$ ls -l | wc -l
+50001
+```
+<!--- cSpell:enable --->
+
+Copy and extract **train data**:
+
+<!--- cSpell:disable --->
+```shell
+buntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ time cp train_images_0.tar.gz /mnt/data02/data/cache/imagenet-1k/train/
+
+real	17m48.831s
+user	0m0.280s
+sys	0m38.470s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ time cp train_images_1.tar.gz /mnt/data02/data/cache/imagenet-1k/train/
+
+real	17m27.775s
+user	0m0.246s
+sys	0m37.565s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ time cp train_images_2.tar.gz /mnt/data02/data/cache/imagenet-1k/train/
+
+real	14m48.684s
+user	0m0.192s
+sys	0m37.380s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ time cp train_images_3.tar.gz /mnt/data02/data/cache/imagenet-1k/train/
+
+real	14m54.299s
+user	0m0.216s
+sys	0m37.659s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ time cp train_images_4.tar.gz /mnt/data02/data/cache/imagenet-1k/train/
+
+real	10m48.578s
+user	0m0.245s
+sys	0m38.058s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/src/imagenet-1k$ cd /mnt/data02/data/cache/imagenet-1k/train
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ 
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time tar -xzf train_images_0.tar.gz
+
+real	74m1.013s
+user	5m23.077s
+sys	3m24.777s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time tar -xzf train_images_1.tar.gz
+
+real	48m38.565s
+user	5m14.130s
+sys	3m16.233s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time tar -xzf train_images_2.tar.gz
+
+real	55m34.729s
+user	5m28.846s
+sys	3m13.015s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time tar -xzf train_images_3.tar.gz
+
+real	51m28.530s
+user	5m18.405s
+sys	3m18.663s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time tar -xzf train_images_4.tar.gz
+
+real	57m31.923s
+user	5m26.846s
+sys	3m26.966s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ time ls -l | wc -l
+1281173
+
+real	2m9.870s
+user	0m2.591s
+sys	0m13.099s
+
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   67G   38G  65% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  589G  512G  54% /mnt/data02
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+
+```
+<!--- cSpell:enable --->
+
+Remove the archives of the training data that are not required anymore:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ ls *.gz
+train_images_0.tar.gz  train_images_1.tar.gz  train_images_2.tar.gz  train_images_3.tar.gz  train_images_4.tar.gz
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k/train$ rm -v train_images_*.tar.gz
+removed 'train_images_0.tar.gz'
+removed 'train_images_1.tar.gz'
+removed 'train_images_2.tar.gz'
+removed 'train_images_3.tar.gz'
+removed 'train_images_4.tar.gz'
+```
+<!--- cSpell:enable --->
+
+Current space left:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   68G   37G  65% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  443G  657G  41% /mnt/data02
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+```
+<!--- cSpell:enable --->
+
+
+Here is the command used to used to train the model using the previously downloaded checkpoint and assuming the data is in the share `./data` path:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path /mnt/data02/data/cache/imagenet-1k/
+
+```
+<!--- cSpell:enable --->
+
+Process stalls but is executing (see below). After 15 minutes, the GPU is till not being used. The process was forcefully terminated.
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ ps ax | grep -i finetune
+1869259 pts/1    Dl+    0:03 python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path /mnt/data02/data/cache/imagenet-1k/
+```
+<!--- cSpell:enable --->
+
+Can we copy this to the local VM disk and continue?. The following commands also stalled:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ du /mnt/data02/data/cache/imagenet-1k/
+ubuntu@cese-produtech3r:~$ du -sh /mnt/data02/data/cache/imagenet-1k/
+ubuntu@cese-produtech3r:~$ time du -sh /mnt/data02/data/cache/imagenet-1k/
+164G	/mnt/data02/data/cache/imagenet-1k/
+
+real	12m34.151s
+user	0m0.978s
+sys	1m24.493s
+```
+<!--- cSpell:enable --->
+
+Seems not, we need 164GB and only have a total of 104G (37G available). This is a show stopper. 
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   68G   37G  65% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  443G  657G  41% /mnt/data02
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data02/data/cache/imagenet-1k$ time du -h
+6.6G	./val
+144G	./train
+14G	./test
+164G	.
+
+real	8m47.133s
+user	0m0.723s
+sys	1m19.383s
+```
+<!--- cSpell:enable --->
+
+
+Need to copy data to new partition. 
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ lsblk
+NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+loop0     7:0    0 63.9M  1 loop /snap/core20/2105
+loop1     7:1    0 63.9M  1 loop /snap/core20/2182
+loop2     7:2    0   87M  1 loop /snap/lxd/26881
+loop3     7:3    0   87M  1 loop /snap/lxd/27037
+loop4     7:4    0 40.4M  1 loop /snap/snapd/20671
+vda     252:0    0  100G  0 disk 
+├─vda1  252:1    0 99.9G  0 part /
+├─vda14 252:14   0    4M  0 part 
+└─vda15 252:15   0  106M  0 part /boot/efi
+vdb     252:16   0  170G  0 disk 
+```
+<!--- cSpell:enable --->
+
+<!-- https://phoenixnap.com/kb/linux-format-disk -->
+
+The partition/disk `vdb` has no file system:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ lsblk -f
+NAME FSTYPE FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+loop0
+     squash 4.0                                                    0   100% /snap/core20/2105
+loop1
+     squash 4.0                                                    0   100% /snap/core20/2182
+loop2
+     squash 4.0                                                    0   100% /snap/lxd/26881
+loop3
+     squash 4.0                                                    0   100% /snap/lxd/27037
+loop4
+     squash 4.0                                                    0   100% /snap/snapd/20671
+vda                                                                         
+├─vda1
+│    ext4   1.0   cloudimg-rootfs
+│                       f44c6339-a6fd-4158-9e95-b421ec3173c9   33.9G    65% /
+├─vda14
+│                                                                           
+└─vda15
+     vfat   FAT32 UEFI  AD67-58A5                              98.3M     6% /boot/efi
+vdb                                                                         
+```
+<!--- cSpell:enable --->
+
+Format with `ext4`: 
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ sudo mkfs -t ext4 /dev/vdb
+mke2fs 1.46.5 (30-Dec-2021)
+Discarding device blocks: done                            
+Creating filesystem with 44564480 4k blocks and 11141120 inodes
+Filesystem UUID: 78ae64d2-664d-4bf0-a681-1f7ca8258365
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, 
+	4096000, 7962624, 11239424, 20480000, 23887872
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (262144 blocks): done
+Writing superblocks and filesystem accounting information: done     
+
+```
+<!--- cSpell:enable --->
+
+We now have `vdb` with an `ext4` filesystem: 
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ lsblk -f
+NAME    FSTYPE   FSVER LABEL           UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+loop0   squashfs 4.0                                                              0   100% /snap/core20/2105
+loop1   squashfs 4.0                                                              0   100% /snap/core20/2182
+loop2   squashfs 4.0                                                              0   100% /snap/lxd/26881
+loop3   squashfs 4.0                                                              0   100% /snap/lxd/27037
+loop4   squashfs 4.0                                                              0   100% /snap/snapd/20671
+vda                                                                                        
+├─vda1  ext4     1.0   cloudimg-rootfs f44c6339-a6fd-4158-9e95-b421ec3173c9   33.9G    65% /
+├─vda14                                                                                    
+└─vda15 vfat     FAT32 UEFI            AD67-58A5                              98.3M     6% /boot/efi
+vdb     ext4     1.0                   78ae64d2-664d-4bf0-a681-1f7ca8258365                
+```
+<!--- cSpell:enable --->
+
+
+Add the partition and its respective mount point. We have the following set-up:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ cat /etc/fstab
+LABEL=cloudimg-rootfs	/	 ext4	discard,errors=remount-ro	0 1
+LABEL=UEFI	/boot/efi	vfat	umask=0077	0 1
+10.55.0.23:/mnt/pool03/cese/data02  /mnt/data02 nfs nfsvers=4,defaults,noatime,nodiratime 0 0
+```
+<!--- cSpell:enable --->
+
+<!-- https://formatswap.com/blog/linux-tutorials/how-to-mount-a-hard-drive-at-boot-in-ubuntu-22-04/ -->
+
+sudo mkdir /mnt/data
+
+/dev/MOUNT_POINT /media/MOUNT_DIR ext4 defaults 0 0
+
+/dev/vdb /mnt/data ext4 defaults 0 0
+
+sudo mount -a
+
+Create the mount point:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ sudo mkdir /mnt/data
+ubuntu@cese-produtech3r:~$ ls /mnt/
+data  data02
+```
+<!--- cSpell:enable --->
+
+Add the mount point to the OS configuration (backup before changes):
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ sudo cp /etc/fstab /etc/fstab.1
+ubuntu@cese-produtech3r:~$ sudo nano /etc/fstab
+```
+<!--- cSpell:enable --->
+
+I used tabs to separate the fields. Here is the content of the configuration file `fstab`:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ cat /etc/fstab
+LABEL=cloudimg-rootfs	/	 ext4	discard,errors=remount-ro	0 1
+LABEL=UEFI	/boot/efi	vfat	umask=0077	0 1
+/dev/vdb	/mnt/data	ext4	defaults	0 0
+10.55.0.23:/mnt/pool03/cese/data02  /mnt/data02 nfs nfsvers=4,defaults,noatime,nodiratime 0 0
+```
+<!--- cSpell:enable --->
+
+Force mount and check that its available:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ sudo mount -a
+ubuntu@cese-produtech3r:~$ ls -l /mnt/
+total 18
+drwxr-xr-x 3 root root 4096 Mar  1 13:59 data
+drwxrwxrwx 5 root root    6 Feb 28 18:49 data02
+```
+<!--- cSpell:enable --->
+
+Create the top folder to hold the ImageNet-1K data:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ cd /mnt/data
+ubuntu@cese-produtech3r:/mnt/data$ 
+
+ubuntu@cese-produtech3r:/mnt/data$ cd ..
+ubuntu@cese-produtech3r:/mnt$ ls -l
+total 18
+drwxr-xr-x 3 root root 4096 Mar  1 13:59 data
+drwxrwxrwx 5 root root    6 Feb 28 18:49 data02
+ubuntu@cese-produtech3r:/mnt$ whoami 
+ubuntu
+ubuntu@cese-produtech3r:/mnt$ sudo chown ubuntu:ubuntu /mnt/data
+ubuntu@cese-produtech3r:/mnt$ ls -l
+total 18
+drwxr-xr-x 3 ubuntu ubuntu 4096 Mar  1 13:59 data
+drwxrwxrwx 5 root   root      6 Feb 28 18:49 data02
+```
+<!--- cSpell:enable --->
+
+Create the separate folders for training with the ImageNet-1K data:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt$ cd data
+ubuntu@cese-produtech3r:/mnt/data$ mkdir train
+ubuntu@cese-produtech3r:/mnt/data$ mkdir test
+ubuntu@cese-produtech3r:/mnt/data$ mkdir val
+ubuntu@cese-produtech3r:/mnt/data$ ls -l
+total 28
+drwx------ 2 root   root   16384 Mar  1 13:59 lost+found
+drwxrwxr-x 2 ubuntu ubuntu  4096 Mar  1 14:27 test
+drwxrwxr-x 2 ubuntu ubuntu  4096 Mar  1 14:27 train
+drwxrwxr-x 2 ubuntu ubuntu  4096 Mar  1 14:27 val
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ cd /mnt/data
+ubuntu@cese-produtech3r:/mnt/data$ ls
+lost+found  test  train  val
+ubuntu@cese-produtech3r:/mnt/data$ ls -l
+total 28
+drwx------ 2 root   root   16384 Mar  1 13:59 lost+found
+drwxrwxr-x 2 ubuntu ubuntu  4096 Mar  1 14:27 test
+drwxrwxr-x 2 ubuntu ubuntu  4096 Mar  1 14:27 train
+drwxrwxr-x 2 ubuntu ubuntu  4096 Mar  1 14:27 val
+ubuntu@cese-produtech3r:/mnt/data$ cd train/
+```
+<!--- cSpell:enable --->
+
+Each download took about 14 minutes:
+
+<!--- cSpell:disable --->
+```shell
+  wget --user=usr --password='PASS' --header="Authorization: Bearer Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_0.tar.gz
+
+  wget --user=usr --password='PASS' --header="Authorization: Bearer Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_1.tar.gz
+
+  wget --user=usr --password='PASS' --header="Authorization: Bearer Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_2.tar.gz
+
+  wget --user=usr --password='PASS' --header="Authorization: Bearer Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_3.tar.gz
+
+  wget --user=usr --password='PASS' --header="Authorization: Bearer Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/train_images_4.tar.gz
+```
+<!--- cSpell:enable --->
+
+
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -lh
+total 136G
+-rw-rw-r-- 1 ubuntu ubuntu 28G May 24  2022 train_images_0.tar.gz
+-rw-rw-r-- 1 ubuntu ubuntu 28G May 24  2022 train_images_1.tar.gz
+-rw-rw-r-- 1 ubuntu ubuntu 28G May 24  2022 train_images_2.tar.gz
+-rw-rw-r-- 1 ubuntu ubuntu 28G May 24  2022 train_images_3.tar.gz
+-rw-rw-r-- 1 ubuntu ubuntu 28G May 24  2022 train_images_4.tar.gz
+```
+<!--- cSpell:enable --->
+
+
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xzf train_images_0.tar.gz
+
+real	3m16.906s
+user	2m28.103s
+sys	0m50.372s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time rm train_images_0.tar.gz 
+
+real	0m1.317s
+user	0m0.001s
+sys	0m1.305s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xzf train_images_1.tar.gz
+
+real	2m46.793s
+user	2m23.159s
+sys	0m45.031s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time rm train_images_1.tar.gz 
+
+real	0m0.662s
+user	0m0.001s
+sys	0m0.650s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xzf train_images_2.tar.gz
+
+real	2m31.879s
+user	2m17.275s
+sys	0m45.706s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time rm train_images_2.tar.gz 
+
+real	0m3.082s
+user	0m0.000s
+sys	0m3.065s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xzf train_images_3.tar.gz
+
+real	2m38.090s
+user	2m17.587s
+sys	0m42.454s
+
+ubuntu@cese-produtech3r:/mnt/data/train$ time rm train_images_3.tar.gz 
+
+real	0m3.119s
+user	0m0.001s
+sys	0m3.101s
+
+```
+<!--- cSpell:enable --->
+
+Not enough space. Had to extract archive data from one path top another:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ cd ~
+ubuntu@cese-produtech3r:~$ time tar -xzf train_images_4.tar.gz -C /mnt/data/train
+
+real	2m30.143s
+user	2m17.284s
+sys	0m45.787s
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   37G   68G  35% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  443G  657G  41% /mnt/data02
+/dev/vdb                            179G  150G   20G  89% /mnt/data
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -l | wc -l
+214766
+ubuntu@cese-produtech3r:/mnt/data/train$ rm *.JPEG
+-bash: /usr/bin/rm: Argument list too long
+```
+<!--- cSpell:enable --->
+
+Get and expand the test dataset locally:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/test_images.tar.gz
+
+ubuntu@cese-produtech3r:~$ time tar -xzf test_images.tar.gz -C /mnt/data/test
+
+real	1m10.286s
+user	1m2.791s
+sys	0m19.930s
+
+ubuntu@cese-produtech3r:~$ time rm test_images.tar.gz 
+
+real	0m1.594s
+user	0m0.000s
+sys	0m1.588s
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   50G   54G  49% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  443G  657G  41% /mnt/data02
+/dev/vdb                            179G  164G  6.0G  97% /mnt/data
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+```
+<!--- cSpell:enable --->
+
+The test dataset cannot be extracted. Their is no space left:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$  wget --user=usr --password='PASS' --header="Authorization: Bearer HF_TOKEN" https://huggingface.co/datasets/imagenet-1k/resolve/main/data/val_images.tar.gz
+
+ubuntu@cese-produtech3r:~$ time tar -xzf val_images.tar.gz -C /mnt/data/val
+```
+<!--- cSpell:enable --->
+
+Example of errors: 
+
+<!--- cSpell:disable --->
+```shell
+tar: ILSVRC2012_val_00039116_n03763968.JPEG: Cannot write: No space left on device
+tar: ILSVRC2012_val_00023978_n03942813.JPEG: Cannot open: No space left on device
+tar: ILSVRC2012_val_00001960_n03445924.JPEG: Cannot write: No space left on device
+tar: ILSVRC2012_val_00012609_n03873416.JPEG: Cannot write: No space left on device
+```
+<!--- cSpell:enable --->
+
+Space:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   44G   61G  42% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  443G  657G  41% /mnt/data02
+/dev/vdb                            179G  170G     0 100% /mnt/data
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+```
+<!--- cSpell:enable --->
+
+Made sure we do not have some archive that has not been removed:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data$ find . -iname "*tar*"
+find: ‘./lost+found’: Permission denied
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data$ sudo du -sh *
+16K	lost+found
+13G	test
+140G	train
+5.6G	val
+```
+<!--- cSpell:enable --->
+
+That is a total of 158.6Gb. Why does t not fit in 179G? Why does the OS report 170GB used?
+
+Add the following bind to the Docker image:
+
+<!--- cSpell:disable --->
+```json
+    "source=${localEnv:HOME}/../../mnt/data0/,target=${containerWorkspaceFolder}/../../../mnt/data0/,type=bind,consistency=cached"
+```
+<!--- cSpell:enable --->
+
+Make sure the data is visible:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ ls /mnt/data
+lost+found  test  train  val
+```
+<!--- cSpell:enable --->
+
+Use the data:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path /mnt/data
+```
+<!--- cSpell:enable --->
+
+Torchvision generates the following error:
+
+<!--- cSpell:disable --->
+```shell
+FileNotFoundError: Couldn't find any class folder in /mnt/data/train.
+```
+<!--- cSpell:enable --->
+
+The [issue](https://stackoverflow.com/questions/69199273/torchvision-imagefolder-could-not-find-any-class-folder) is that the data previously downloaded does does [not split the classes](https://discuss.pytorch.org/t/filenotfounderror-couldnt-find-any-class-folder/138578) into te expected folders. The following links provide more information and scripts to pepare the data as required:
+
+1. https://stackoverflow.com/questions/77328205/how-to-extract-the-files-of-imagenet-1k-dataset-for-each-class-separately
+  1. https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4
+     1. https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh
+     1. https://github.com/facebookarchive/fb.resnet.torch/blob/master/INSTALL.md
+
+
+First we download the files that include a training dataset that has already been split into the required classes (note that the test dataset does not exist). We use a *hidden* URL for this:
+
+<!--- cSpell:disable --->
+```shell
+wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_val.tar --no-check-certificate
+wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train_t3.tar --no-check-certificate
+wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train.tar --no-check-certificate
+wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_test.tar --no-check-certificate DOES NOT EXIST
+```
+<!--- cSpell:enable --->
+
+We download the test images form this URL:
+
+<!--- cSpell:disable --->
+```shell
+wget http://www.image-net.org/challenges/LSVRC/2012/nnoupb/ILSVRC2012_img_test.tar
+wget http://www.image-net.org/challenges/LSVRC/2012/nnoupb/ILSVRC2012_img_test.tar 
+```
+<!--- cSpell:enable --->
+
+Here are some [scripts](https://github.com/david8862/keras-YOLOv3-model-set/blob/master/common/backbones/imagenet_training/README.md) that are used for preparing the  data:
+<!--- cSpell:disable --->
+```shell
+  preprocess_imagenet_train_data.py 
+  preprocess_imagenet_validation_data.py
+```
+<!--- cSpell:enable --->
+
+This [link](https://github.com/fh295/semanticCNN/tree/master/imagenet_labels) contains the class mappings but be useful. For example checking the results of the test data set. 
+
+[Notes](https://www.cyberciti.biz/faq/list-the-contents-of-a-tar-or-targz-file/) on how to list the contents compressed and uncompressed TAR file:
+<!--- cSpell:disable --->
+```shell
+tar -ztvf my-data.tar.gz
+tar -tvf my-data.tar.gz
+tar -tvf my-data.tar.gz 'search-pattern'
+```
+<!--- cSpell:enable --->
+
+Example of extracting the dataset:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ tar -tvf ILSVRC2012_img_train_t3.tar
+```
+<!--- cSpell:enable --->
+
+This [link](https://hyper.ai/datasets/4889) has files but the sizes do match with the [HuggingFace data](https://huggingface.co/datasets/imagenet-1k/blob/main/README.md). We record it here in case we need data from other years. 
+
+One of the issues we have with downloading the data is that it takes a long time and we may need to interrupt it. We can use `wget` and [resume broken downloads](https://www.cyberciti.biz/tips/wget-resume-broken-download.html) using the `-c` or `--continue` option. Here is an example:
+
+<!--- cSpell:disable --->
+```shell
+wget -c https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train.tar --no-check-certificate
+
+ETA 113h14m
+```
+<!--- cSpell:enable --->
+
+we can [split](https://www.tecmint.com/split-large-tar-into-multiple-files-of-certain-size/) the a [TAR archive](https://help.ubuntu.com/community/BackupYourSystem/TAR). Here are a set of examples that show creating a single archive, splitting it and then joining and extracting the content:
+
+<!--- cSpell:disable --->
+```shell
+$ tar -cvjf home.tar.bz2 /home/aaronkilik/Documents/* 
+$ ls -lh home.tar.bz2
+$ split -b 10M home.tar.bz2 "home.tar.bz2.part"
+$ ls -lh home.tar.bz2.parta*
+$ tar -cvzf - data/* | split -b 150M - "downloads-part"
+$ cat home.tar.bz2.parta* > backup.tar.gz.joined
+```
+<!--- cSpell:enable --->
+
+> **NOTE 1**: the `split` command does not split archives at file boundaries. This means a file may be spit between two split archives. The result is that we cannot safely extract a single split archive because we may get an incomplete file. More information below. 
+
+> **NOTE 2**: use the [-d option](https://www.linkedin.com/advice/3/how-do-you-split-large-tar-archive-smaller-chunks) with the split command to use numeric suffixes instead of alphabetic ones for the output files. 
+
+Here is an example using a pipe to combine and extract multiple split TAR archives:
+<!--- cSpell:disable --->
+```shell
+$ tar cvzf - dir/ | split --bytes=200MB - sda1.backup.tar.gz.
+$ cat sda1.backup.tar.gz.* | tar xzvf -
+```
+<!--- cSpell:enable --->
+
+We can also create [**multi-volume TAR archives**](https://unix.stackexchange.com/questions/61774/create-a-tar-archive-split-into-blocks-of-a-maximum-size). Here is an example (usually volumes are renamed with character suffixes but here we override this to generate numeric suffixes):
+
+<!--- cSpell:disable --->
+```shell
+$ tar -cv --tape-length=2097000 --file=my_archive-{00..50}.tar file1 file2 dir3
+$ tar -czv --tape-length=2097000 --file=my_archive-{00..50}.tar.gz file1 file2 dir3
+$ tar --tape-length=1048576 -cMv --file=tar_archive.{tar,tar-{2..100}} backup.tar.lzma
+$ tarcat my_archive-*.tar | tar -xf -
+```
+<!--- cSpell:enable --->
+
+> **NOTE**: We should not use multi volume tar archives because the multi volume archives are also **not split at file boundaries**.
+
+Here are a few example of [extracting multi volume tar archives](https://www.thewebhelp.com/linux/creating-multivolume-tar-files):
+
+<!--- cSpell:disable --->
+```shell
+$ tar -cML 1258291 -f my_documents.tar my_documents (interactive)
+$ tar -xMf my_documents.tar (interactive)
+$ tar xvfM yast2backup.1.tar yast2backup2.tar yast2backup3.tar
+$ for i in `ls *.tar`;do tar xvf $i;done
+```
+<!--- cSpell:enable --->
+
+The renaming of files may also be done using a script:
+
+<!--- cSpell:disable --->
+```shell
+$ tar -c -L1G -H posix -f /backup/somearchive.tar -F '/usr/bin/tar-volume.sh' somefolder
+```
+<!--- cSpell:enable --->
+
+> **NOTE**: Note that if you just extract 1 single volume, there may be incomplete files which were split at the beginning or end of the archive to another volume. Tar will create a subfolder called GNUFileParts.xxxx/filename which contain the incomplete file(s).
+
+<!--
+https://unix.stackexchange.com/questions/504610/tar-splitting-into-standalone-volumes
+http://linuxsay.com/t/how-to-create-tar-multi-volume-by-using-the-automatic-rename-script-provided-in-the-manual-of-gnu-tar/2862
+https://www.dmuth.org/tarsplit-a-utility-to-split-tarballs-into-multiple-parts/
+-->
+
+1. [How to split a tar file into smaller parts at file boundaries?](https://superuser.com/questions/189691/how-to-split-a-tar-file-into-smaller-parts-at-file-boundaries)
+   1. [tarsplitter](https://github.com/AQUAOSOTech/tarsplitter ) - Go code. binaries available
+   1. [tarsplitter](https://github.com/messiaen/tarsplitter) - Go with makefile
+   1. [lib archive](https://github.com/libarchive/libarchive)
+      1. [lib archive]( www.libarchive.org)
+      1. Has binaries for windows only, make install for Linux
+   1. [Tarsplit: A Utility to Split Tarballs Into Multiple Parts](https://www.dmuth.org/tarsplit-a-utility-to-split-tarballs-into-multiple-parts/)
+      1. https://github.com/dmuth/tarsplit (Python)
+      1. https://raw.githubusercontent.com/dmuth/tarsplit/main/tarsplit
+
+These are the data files we have:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ ls -lh *.tar
+-rw-rw-r-- 1 hmf hmf 728M jul  4  2012 ILSVRC2012_img_train_t3.tar
+-rw-rw-r-- 1 hmf hmf 138G jun 14  2012 ILSVRC2012_img_train.tar
+-rw-rw-r-- 1 hmf hmf 6,3G jun 14  2012 ILSVRC2012_img_val.tar
+```
+<!--- cSpell:enable --->
+
+Make sure we will not delete these by mistake:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ chmod u-w *.tar
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ ls -lh *.tar
+-r--rw-r-- 1 hmf hmf 728M jul  4  2012 ILSVRC2012_img_train_t3.tar
+-r--rw-r-- 1 hmf hmf 138G jun 14  2012 ILSVRC2012_img_train.tar
+-r--rw-r-- 1 hmf hmf 6,3G jun 14  2012 ILSVRC2012_img_val.tar
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ chmod g-w *.tar
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ ls -lh *.tar
+-r--r--r-- 1 hmf hmf 728M jul  4  2012 ILSVRC2012_img_train_t3.tar
+-r--r--r-- 1 hmf hmf 138G jun 14  2012 ILSVRC2012_img_train.tar
+-r--r--r-- 1 hmf hmf 6,3G jun 14  2012 ILSVRC2012_img_val.tar
+```
+<!--- cSpell:enable --->
+
+Make sure we have the *"labelled"* data (1000 archives):
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ tar -tvf ILSVRC2012_img_train.tar 
+-rw-r--r-- 2016/imagenet 157368320 2012-06-14 09:45 n01440764.tar
+-rw-r--r-- 2016/imagenet 133662720 2012-06-14 09:45 n01443537.tar
+-rw-r--r-- 2016/imagenet 129822720 2012-06-14 09:45 n01484850.tar
+-rw-r--r-- 2016/imagenet 114104320 2012-06-14 09:46 n01491361.tar
+-rw-r--r-- 2016/imagenet 138905600 2012-06-14 09:46 n01494475.tar
+-rw-r--r-- 2016/imagenet 139069440 2012-06-14 09:46 n01496331.tar
+-rw-r--r-- 2016/imagenet 178370560 2012-06-14 09:46 n01498041.tar
+...
+-rw-r--r-- 2016/imagenet 193003520 2012-06-14 11:42 n13054560.tar
+-rw-r--r-- 2016/imagenet 157122560 2012-06-14 11:42 n13133613.tar
+-rw-r--r-- 2016/imagenet 131082240 2012-06-14 11:42 n15075141.tar
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ tar -tvf ILSVRC2012_img_train.tar | wc -l 
+1000
+```
+<!--- cSpell:enable --->
+
+Download the [binary of tar-splitter](https://github.com/AQUAOSOTech/tarsplitter/releases/tag/v2.2.0):
+Download the [python version of a tar-splitter]https://raw.githubusercontent.com/dmuth/tarsplit/main/tarsplit
+Move these utilities to the dataset folder:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ mv ~/Downloads/tarsplitter_linux .
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ mv ~/Downloads/tarsplit.sh  .
+```
+<!--- cSpell:enable --->
+
+Create a copy of the data that we will use to split:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ mkdir imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cp ILSVRC2012_img_train.tar imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cp tarsplitter_linux imagenet-1kb/
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cd imagenet-1kb/
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ ls
+ILSVRC2012_img_train.tar  tarsplitter_linux
+```
+<!--- cSpell:enable --->
+
+Now split the data into 6 archives so that they may be less that 25GB each:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time ./tarsplitter_linux -i ILSVRC2012_img_train.tar -m split -o ./ILSVRC2012_img_train_ -p 6
+ILSVRC2012_img_train.tar is 147897477120 bytes, splitting into 6 parts of 24649579520 bytes
+First new archive is /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_0.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_1.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_2.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_3.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_4.tar
+Initialized next tar archive /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb/ILSVRC2012_img_train_5.tar
+Done reading input archive
+All done
+
+real	3m38,949s
+user	0m7,621s
+sys	3m14,750s
+```
+<!--- cSpell:enable --->
+
+This is what we have at this point:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ ls -lh
+total 276G
+-rw-rw-r-- 1 hmf hmf  24G mar  7 15:23 ILSVRC2012_img_train_0.tar
+-rw-rw-r-- 1 hmf hmf  23G mar  7 15:24 ILSVRC2012_img_train_1.tar
+-rw-rw-r-- 1 hmf hmf  23G mar  7 15:24 ILSVRC2012_img_train_2.tar
+-rw-rw-r-- 1 hmf hmf  24G mar  7 15:25 ILSVRC2012_img_train_3.tar
+-rw-rw-r-- 1 hmf hmf  24G mar  7 15:26 ILSVRC2012_img_train_4.tar
+-rw-rw-r-- 1 hmf hmf  23G mar  7 15:26 ILSVRC2012_img_train_5.tar
+-r--r--r-- 1 hmf hmf 138G mar  7 15:16 ILSVRC2012_img_train.tar
+-rwxrwxr-x 1 hmf hmf 1,8M mar  7 15:16 tarsplitter_linux
+```
+<!--- cSpell:enable --->
+
+First remove the data from the full disk:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:~$ ssh ubuntu@10.61.14.231
+ubuntu@cese-produtech3r:~$ cd /mnt/data/train/
+ubuntu@cese-produtech3r:/mnt/data/train$ rm *
+-bash: /usr/bin/rm: Argument list too long
+ubuntu@cese-produtech3r:/mnt/data/train$ cd ..
+ubuntu@cese-produtech3r:/mnt/data$ rm train/
+rm: cannot remove 'train/': Is a directory
+ubuntu@cese-produtech3r:/mnt/data$ rm -r train/
+ubuntu@cese-produtech3r:/mnt/data$ 
+ubuntu@cese-produtech3r:/mnt/data$ mkdir train
+```
+<!--- cSpell:enable --->
+
+
+scp train_images_0.tar.gz ubuntu@10.61.14.231:/mnt/data02/data/src/
+
+time scp ILSVRC2012_img_train_0.tar ubuntu@10.61.14.231:/mnt/data/train
+
+
+cd /mnt/data/train
+ls 
+time tar -xf ILSVRC2012_img_train_0.tar
+
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_0.tar ubuntu@10.61.14.231:/mnt/data/train
+ILSVRC2012_img_train_0.tar                                                                                                    100%   23GB   9.3MB/s   42:07    
+
+real	42m8,200s
+user	2m50,909s
+sys	2m17,149s
+```
+<!--- cSpell:enable --->
+
+
+
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ cd ~
+ubuntu@cese-produtech3r:~$ cd /mnt/data/train
+ubuntu@cese-produtech3r:/mnt/data/train$ ls
+ILSVRC2012_img_train_0.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_0.tar 
+
+real	0m15.488s
+user	0m0.366s
+sys	0m14.660s
+ubuntu@cese-produtech3r:/mnt/data/train$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.4M   12G   1% /run
+/dev/vda1                           104G   55G   50G  53% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  470G  631G  43% /mnt/data02
+/dev/vdb                            179G   70G  101G  41% /mnt/data
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+```
+<!--- cSpell:enable --->
+
+We now have a set of TAR archives. First remove the transferred archive
+
+
+https://unix.stackexchange.com/questions/19840/extract-multiple-tar-gz-files-with-a-single-tar-call
+for file in *.tar.gz; do tar -zxf "$file"; done
+
+https://www.cyberciti.biz/faq/how-to-extract-multiple-tar-ball-tar-gz-files-in-directory-on-linux-or-unix/
+
+time for file in *.tar; do tar -xf "$file"; done
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_0.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ time for file in *.tar; do tar -xf "$file"; done
+
+real	0m22.404s
+user	0m0.805s
+sys	0m18.918s
+```
+<!--- cSpell:enable --->
+
+Unfortunately each class TAR archive does not have its files within a folder. [These scripts](https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4) may allow us to copy to the required folders. [These scripts](https://github.com/fh295/semanticCNN/tree/master/imagenet_labels) may provide us with human readable labels. Here we could opt for the first name in the [labels.txt](https://github.com/fh295/semanticCNN/blob/master/imagenet_labels/labels.txt) or [mapping.txt](https://github.com/fh295/semanticCNN/blob/master/imagenet_labels/mapping.txt) file. Latter seems to be better. 
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ cd /mnt/data/tmp/
+/mnt/data/train
+ubuntu@cese-produtech3r:/mnt/data/train$ 
+
+ubuntu@cese-produtech3r:/mnt/data$ time cp -vi tmp/* train/
+...
+'tmp/n02037110.tar' -> 'train/n02037110.tar'
+'tmp/n02051845.tar' -> 'train/n02051845.tar'
+'tmp/n02056570.tar' -> 'train/n02056570.tar'
+
+real	0m21.389s
+user	0m0.047s
+sys	0m13.627s
+
+ubuntu@cese-produtech3r:/mnt/data$ cd train/
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -l | wc -l
+147
+
+find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+```
+<!--- cSpell:enable --->
+
+The first command below goes through all the current archives, gets the file name and extracts the suffix to that it represents the folder (class) name. The next line counts the number of classes. We see that the first train data archive has 146 classes.
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ find . -name "*.tar" | while read NAME ; do echo "${NAME%.tar}"; done
+ubuntu@cese-produtech3r:/mnt/data/train$ find . -name "*.tar" | while read NAME ; do echo "${NAME%.tar}"; done | wc -l
+146
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+n01768244_2430.JPEG
+n01768244_571.JPEG
+n01768244_5648.JPEG
+n01768244_2437.JPEG
+
+real	0m24.661s
+user	0m1.184s
+sys	0m23.265s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -l | wc -l
+147
+ubuntu@cese-produtech3r:/mnt/data/train$ ls
+n01440764  n01531178  n01614925  n01664065  n01689811  n01729977  n01753488  n01775062  n01818515  n01855672  n01924916  n01981276  n02009912  n02037110
+n01443537  n01532829  n01616318  n01665541  n01692333  n01734418  n01755581  n01776313  n01819313  n01860187  n01930112  n01983481  n02011460  n02051845
+n01484850  n01534433  n01622779  n01667114  n01693334  n01735189  n01756291  n01784675  n01820546  n01871265  n01943899  n01984695  n02012849  n02056570
+n01491361  n01537544  n01629819  n01667778  n01694178  n01737021  n01768244  n01795545  n01824575  n01872401  n01944390  n01985128  n02013706
+n01494475  n01558993  n01630670  n01669191  n01695060  n01739381  n01770081  n01796340  n01828970  n01873310  n01945685  n01986214  n02017213
+n01496331  n01560419  n01631663  n01675722  n01697457  n01740131  n01770393  n01797886  n01829413  n01877812  n01950731  n01990800  n02018207
+n01498041  n01580077  n01632458  n01677366  n01698640  n01742172  n01773157  n01798484  n01833805  n01882714  n01955084  n02002556  n02018795
+n01514668  n01582220  n01632777  n01682714  n01704323  n01744401  n01773549  n01806143  n01843065  n01883070  n01968897  n02002724  n02025239
+n01514859  n01592084  n01641577  n01685808  n01728572  n01748264  n01773797  n01806567  n01843383  n01910747  n01978287  n02006656  n02027492
+n01518878  n01601694  n01644373  n01687978  n01728920  n01749939  n01774384  n01807496  n01847000  n01914609  n01978455  n02007558  n02028035
+n01530575  n01608432  n01644900  n01688243  n01729322  n01751748  n01774750  n01817953  n01855032  n01917289  n01980166  n02009229  n02033041
+```
+<!--- cSpell:enable --->
+
+Now onto the 2nd split archive. First copy the source to the remote node:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_1.tar ubuntu@10.61.14.231:/mnt/data/train
+ILSVRC2012_img_train_1.tar                                                                             100%   23GB   9.2MB/s   42:32    
+
+real	42m33,324s
+user	2m53,527s
+sys	2m12,620s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar
+ILSVRC2012_img_train_1.tar
+```
+<!--- cSpell:enable --->
+
+Now unpack the archives and move their contents to folders:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+146
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_1.tar 
+
+real	0m34.987s
+user	0m0.586s
+sys	0m21.639s
+ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_1.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar | wc -l
+180
+ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+...
+n02112350_5390.JPEG
+n02112350_6392.JPEG
+n02112350_1935.JPEG
+
+real	0m28.198s
+user	0m1.389s
+sys	0m26.495s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+326
+ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
+326
+```
+<!--- cSpell:enable --->
+
+Correct: 146+180 = 326
+
+Now onto the 3nd split archive. First copy the source to the remote node:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_2.tar ubuntu@10.61.14.231:/mnt/data/train
+ILSVRC2012_img_train_2.tar                                                                             100%   23GB   9.2MB/s   42:44    
+
+real	42m45,627s
+user	2m51,629s
+sys	2m13,466s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar
+ILSVRC2012_img_train_2.tar
+```
+<!--- cSpell:enable --->
+
+Now unpack the archives and move their contents to folders:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+326
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_2.tar 
+real	0m16.067s
+user	0m0.446s
+sys	0m15.270s
+ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_2.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar | wc -l
+162
+ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+...
+n02396427_36977.JPEG
+n02396427_13386.JPEG
+n02396427_7147.JPEG
+n02396427_15280.JPEG
+
+real	0m50.964s
+user	0m1.461s
+sys	0m27.503s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+488
+ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
+488
+```
+<!--- cSpell:enable --->
+
+Correct: 326+162 = 488
+
+
+Now onto the 4th split archive. First copy the source to the remote node:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_3.tar ubuntu@10.61.14.231:/mnt/data/train
+ILSVRC2012_img_train_3.tar                                                                                                                        100%   23GB  40.9MB/s   09:39    
+
+real	9m40,292s
+user	1m16,996s
+sys	1m1,358s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar
+ILSVRC2012_img_train_3.tar
+```
+<!--- cSpell:enable --->
+
+Now unpack the archives and move their contents to folders:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+488
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_3.tar 
+
+real	0m53.666s
+user	0m0.621s
+sys	0m21.046s
+ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_3.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar | wc -l
+174
+ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+...
+n03160309_39347.JPEG
+n03160309_65033.JPEG
+n03160309_4007.JPEG
+n03160309_34384.JPEG
+
+real	0m28.346s
+user	0m1.495s
+sys	0m26.560s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+662
+ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
+662
+```
+<!--- cSpell:enable --->
+
+Correct: 488+174 = 662
+
+
+Now onto the 5th split archive. First copy the source to the remote node:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_4.tar ubuntu@10.61.14.231:/mnt/data/train
+ILSVRC2012_img_train_4.tar                                                                                                                        100%   23GB  42.1MB/s   09:19    
+
+real	9m20,705s
+user	1m17,901s
+sys	1m1,227s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar
+ILSVRC2012_img_train_4.tar
+```
+<!--- cSpell:enable --->
+
+Now unpack the archives and move their contents to folders:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+662
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_4.tar 
+real	0m45.635s
+user	0m0.520s
+sys	0m18.877s
+ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_4.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar | wc -l
+181
+ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+...
+n03970156_7708.JPEG
+n03970156_10403.JPEG
+n03970156_8501.JPEG
+
+real	0m29.328s
+user	0m1.689s
+sys	0m25.741s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+843
+ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
+843
+```
+<!--- cSpell:enable --->
+
+Correct: 662+181 = 843
+
+
+Now onto the 6th split archive. First copy the source to the remote node:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_5.tar ubuntu@10.61.14.231:/mnt/data/train
+ILSVRC2012_img_train_5.tar                                                                                                                        100%   23GB  38.9MB/s   09:56    
+
+real	9m56,823s
+user	1m55,564s
+sys	1m32,466s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar
+ILSVRC2012_img_train_5.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ mv ILSVRC2012_img_train_5.tar /tmp
+```
+<!--- cSpell:enable --->
+
+Now unpack the archives and move their contents to folders:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+843
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf /tmp/ILSVRC2012_img_train_5.tar -C /mnt/data/train
+
+real	0m25.712s
+user	0m0.566s
+sys	0m18.076s
+ubuntu@cese-produtech3r:/mnt/data/train$ rm /tmp/ILSVRC2012_img_train_5.tar 
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar | wc -l
+157
+ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+...
+n09288635_1710.JPEG
+n09288635_9608.JPEG
+n09288635_12409.JPEG
+
+real	0m27.035s
+user	0m1.581s
+sys	0m25.156s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+1000
+ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
+1000
+```
+<!--- cSpell:enable --->
+
+Correct: has all 1k classes
+
+Without the test and validation sets:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.5M   12G   1% /run
+/dev/vda1                           104G   55G   50G  53% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  470G  631G  43% /mnt/data02
+/dev/vdb                            179G  150G   20G  89% /mnt/data
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+```
+
+As per [this source](https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4) we have the correct number of examples:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data$  find train/ -name "*.JPEG" | wc -l
+1281167
+```
+<!--- cSpell:enable --->
+
+Now we deal with the validation set:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cd imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_val.tar ubuntu@10.61.14.231:/tmp
+ILSVRC2012_img_val.tar                                                                                                                            100% 6432MB  42.1MB/s   02:32    
+
+real	2m33,428s
+user	0m33,752s
+sys	0m26,303s
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data$ cd val/
+ubuntu@cese-produtech3r:/mnt/data/val$ 
+ubuntu@cese-produtech3r:/mnt/data/val$ ls /tmp/*.tar
+/tmp/ILSVRC2012_img_val.tar
+ubuntu@cese-produtech3r:/mnt/data/val$ time tar -xf /tmp/ILSVRC2012_img_val.tar -C /mnt/data/val
+real	0m4.736s
+user	0m0.160s
+sys	0m4.568s
+ubuntu@cese-produtech3r:/mnt/data/val$ ls | wc -l
+50000
+ubuntu@cese-produtech3r:/mnt/data/val$ ls *.JPEG | wc -l
+50000
+```
+<!--- cSpell:enable --->
+
+As per [this source](https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4) we have the correct number of examples:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/val$ cd ..
+ubuntu@cese-produtech3r:/mnt/data$ find val/ -name "*.JPEG" | wc -l
+50000
+```
+<!--- cSpell:enable --->
+
+We now have this much free:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data$ rm /tmp/ILSVRC2012_img_val.tar 
+rm: remove write-protected regular file '/tmp/ILSVRC2012_img_val.tar'? y
+ubuntu@cese-produtech3r:/mnt/data$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.5M   12G   1% /run
+/dev/vda1                           104G   55G   50G  53% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  470G  631G  43% /mnt/data02
+/dev/vdb                            179G  157G   13G  93% /mnt/data
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+```
+<!--- cSpell:enable --->
+
+
+Now we deal with the validation set:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ cd ..
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cd imagenet-1k
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ time scp test_images.tar.gz ubuntu@10.61.14.231:/tmp
+test_images.tar.gz                                                                                                                                100%   13GB  42.0MB/s   05:07    
+
+real	5m8,022s
+user	0m32,437s
+sys	0m24,900s
+ubuntu@cese-produtech3r:~$ cd /mnt/data/
+ubuntu@cese-produtech3r:/mnt/data$ mkdir test
+ubuntu@cese-produtech3r:/mnt/data/val$ time tar -xvf /tmp/test_images.tar.gz -C /mnt/data/test
+...
+ILSVRC2012_test_00060671.JPEG
+tar: ILSVRC2012_test_00060671.JPEG: Cannot write: No space left on device
+ILSVRC2012_test_00014752.JPEG
+tar: ILSVRC2012_test_00014752.JPEG: Cannot write: No space left on device
+tar: Exiting with failure status due to previous errors
+
+real	1m9.661s
+user	1m3.400s
+sys	0m19.736s
+ubuntu@cese-produtech3r:/mnt/data/val$ cd .. 
+ubuntu@cese-produtech3r:/mnt/data$ cd test
+ubuntu@cese-produtech3r:/mnt/data/test$ ls | wc -l
+99638
+```
+<!--- cSpell:enable --->
+
+From the [Hugging face datasets/imagenet-1k page](https://huggingface.co/datasets/imagenet-1k) is is stated:
+
+*"This dataset spans 1000 object classes and contains 1,281,167 training images, 50,000 validation images and 100,000 test images."* 
+
+This means we were not able to add the last **362** images.
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+wget -qO- https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh | bash
+
+
+<!--
+ https://stackoverflow.com/questions/26411225/how-to-resume-scp-with-partially-copied-files
+ https://superuser.com/questions/421672/is-there-a-way-to-resume-an-interrupted-scp-of-a-file
+ https://unix.stackexchange.com/questions/652070/how-do-i-resume-an-scp-download
+ https://coderwall.com/p/-zwtyw/resume-stalled-scp-file-transfer-in-linux
+--> 
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
