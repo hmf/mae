@@ -1868,7 +1868,72 @@ ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
 
 Correct: has all 1k classes
 
+Without the test and validation sets:
 
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.5M   12G   1% /run
+/dev/vda1                           104G   55G   50G  53% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  470G  631G  43% /mnt/data02
+/dev/vdb                            179G  150G   20G  89% /mnt/data
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+```
+
+As per [this source](https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4) we have the correct number of examples:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data$  find train/ -name "*.JPEG" | wc -l
+1281167
+```
+<!--- cSpell:enable --->
+
+
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cd imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_val.tar ubuntu@10.61.14.231:/tmp
+ILSVRC2012_img_val.tar                                                                                                                            100% 6432MB  42.1MB/s   02:32    
+
+real	2m33,428s
+user	0m33,752s
+sys	0m26,303s
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data$ cd val/
+ubuntu@cese-produtech3r:/mnt/data/val$ 
+ubuntu@cese-produtech3r:/mnt/data/val$ ls /tmp/*.tar
+/tmp/ILSVRC2012_img_val.tar
+ubuntu@cese-produtech3r:/mnt/data/val$ time tar -xf /tmp/ILSVRC2012_img_val.tar -C /mnt/data/val
+
+real	0m4.736s
+user	0m0.160s
+sys	0m4.568s
+ubuntu@cese-produtech3r:/mnt/data/val$ ls | wc -l
+50000
+ubuntu@cese-produtech3r:/mnt/data/val$ ls *.JPEG | wc -l
+50000
+```
+<!--- cSpell:enable --->
+
+As per [this source](https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4) we have the correct number of examples:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/val$ cd ..
+ubuntu@cese-produtech3r:/mnt/data$ find val/ -name "*.JPEG" | wc -l
+50000
+```
+<!--- cSpell:enable --->
 
 
 <!--
