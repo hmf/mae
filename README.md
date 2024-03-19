@@ -1893,7 +1893,7 @@ ubuntu@cese-produtech3r:/mnt/data$  find train/ -name "*.JPEG" | wc -l
 ```
 <!--- cSpell:enable --->
 
-
+Now we deal with the validation set:
 
 <!--- cSpell:disable --->
 ```shell
@@ -1914,7 +1914,6 @@ ubuntu@cese-produtech3r:/mnt/data/val$
 ubuntu@cese-produtech3r:/mnt/data/val$ ls /tmp/*.tar
 /tmp/ILSVRC2012_img_val.tar
 ubuntu@cese-produtech3r:/mnt/data/val$ time tar -xf /tmp/ILSVRC2012_img_val.tar -C /mnt/data/val
-
 real	0m4.736s
 user	0m0.160s
 sys	0m4.568s
@@ -1934,6 +1933,65 @@ ubuntu@cese-produtech3r:/mnt/data$ find val/ -name "*.JPEG" | wc -l
 50000
 ```
 <!--- cSpell:enable --->
+
+We now have this much free:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data$ rm /tmp/ILSVRC2012_img_val.tar 
+rm: remove write-protected regular file '/tmp/ILSVRC2012_img_val.tar'? y
+ubuntu@cese-produtech3r:/mnt/data$ df -H
+Filesystem                          Size  Used Avail Use% Mounted on
+tmpfs                                12G  1.5M   12G   1% /run
+/dev/vda1                           104G   55G   50G  53% /
+tmpfs                                60G     0   60G   0% /dev/shm
+tmpfs                               5.3M     0  5.3M   0% /run/lock
+/dev/vda15                          110M  6.4M  104M   6% /boot/efi
+10.55.0.23:/mnt/pool03/cese/data02  1.1T  470G  631G  43% /mnt/data02
+/dev/vdb                            179G  157G   13G  93% /mnt/data
+tmpfs                                12G  8.2k   12G   1% /run/user/1002
+```
+<!--- cSpell:enable --->
+
+
+Now we deal with the validation set:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ cd ..
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision$ cd imagenet-1k
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1k$ time scp test_images.tar.gz ubuntu@10.61.14.231:/tmp
+test_images.tar.gz                                                                                                                                100%   13GB  42.0MB/s   05:07    
+
+real	5m8,022s
+user	0m32,437s
+sys	0m24,900s
+ubuntu@cese-produtech3r:~$ cd /mnt/data/
+ubuntu@cese-produtech3r:/mnt/data$ mkdir test
+ubuntu@cese-produtech3r:/mnt/data/val$ time tar -xvf /tmp/test_images.tar.gz -C /mnt/data/test
+...
+ILSVRC2012_test_00060671.JPEG
+tar: ILSVRC2012_test_00060671.JPEG: Cannot write: No space left on device
+ILSVRC2012_test_00014752.JPEG
+tar: ILSVRC2012_test_00014752.JPEG: Cannot write: No space left on device
+tar: Exiting with failure status due to previous errors
+
+real	1m9.661s
+user	1m3.400s
+sys	0m19.736s
+ubuntu@cese-produtech3r:/mnt/data/val$ cd .. 
+ubuntu@cese-produtech3r:/mnt/data$ cd test
+ubuntu@cese-produtech3r:/mnt/data/test$ ls | wc -l
+99638
+```
+<!--- cSpell:enable --->
+
+From the [Hugging face datasets/imagenet-1k page](https://huggingface.co/datasets/imagenet-1k) is is stated:
+
+*"This dataset spans 1000 object classes and contains 1,281,167 training images, 50,000 validation images and 100,000 test images."* 
+
+This means we were not able to add the last **362** images.
 
 
 <!--
