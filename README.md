@@ -1664,7 +1664,6 @@ ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
 
 Correct: 146+180 = 326
 
-
 Now onto the 3nd split archive. First copy the source to the remote node:
 
 <!--- cSpell:disable --->
@@ -1688,36 +1687,193 @@ Now unpack the archives and move their contents to folders:
 ```shell
 ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */
 ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
-146
+326
 ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_2.tar 
-
-????
-real	0m34.987s
-user	0m0.586s
-sys	0m21.639s
+real	0m16.067s
+user	0m0.446s
+sys	0m15.270s
 ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_2.tar
 ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar | wc -l
-180
+162
 ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
 ...
-???
-n02112350_5390.JPEG
-n02112350_6392.JPEG
-n02112350_1935.JPEG
+n02396427_36977.JPEG
+n02396427_13386.JPEG
+n02396427_7147.JPEG
+n02396427_15280.JPEG
 
-real	0m28.198s
-user	0m1.389s
-sys	0m26.495s
+real	0m50.964s
+user	0m1.461s
+sys	0m27.503s
 ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
-???
-326
+488
 ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
-???
-326
+488
 ```
 <!--- cSpell:enable --->
 
-Correct: 326+??? = ???
+Correct: 326+162 = 488
+
+
+Now onto the 4th split archive. First copy the source to the remote node:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_3.tar ubuntu@10.61.14.231:/mnt/data/train
+ILSVRC2012_img_train_3.tar                                                                                                                        100%   23GB  40.9MB/s   09:39    
+
+real	9m40,292s
+user	1m16,996s
+sys	1m1,358s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar
+ILSVRC2012_img_train_3.tar
+```
+<!--- cSpell:enable --->
+
+Now unpack the archives and move their contents to folders:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+488
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_3.tar 
+
+real	0m53.666s
+user	0m0.621s
+sys	0m21.046s
+ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_3.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar | wc -l
+174
+ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+...
+n03160309_39347.JPEG
+n03160309_65033.JPEG
+n03160309_4007.JPEG
+n03160309_34384.JPEG
+
+real	0m28.346s
+user	0m1.495s
+sys	0m26.560s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+662
+ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
+662
+```
+<!--- cSpell:enable --->
+
+Correct: 488+174 = 662
+
+
+Now onto the 5th split archive. First copy the source to the remote node:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_4.tar ubuntu@10.61.14.231:/mnt/data/train
+ILSVRC2012_img_train_4.tar                                                                                                                        100%   23GB  42.1MB/s   09:19    
+
+real	9m20,705s
+user	1m17,901s
+sys	1m1,227s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar
+ILSVRC2012_img_train_4.tar
+```
+<!--- cSpell:enable --->
+
+Now unpack the archives and move their contents to folders:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+662
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_4.tar 
+real	0m45.635s
+user	0m0.520s
+sys	0m18.877s
+ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_4.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar | wc -l
+181
+ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+...
+n03970156_7708.JPEG
+n03970156_10403.JPEG
+n03970156_8501.JPEG
+
+real	0m29.328s
+user	0m1.689s
+sys	0m25.741s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+843
+ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
+843
+```
+<!--- cSpell:enable --->
+
+Correct: 662+181 = 843
+
+
+Now onto the 6th split archive. First copy the source to the remote node:
+
+<!--- cSpell:disable --->
+```shell
+hmf@gandalf:~$ cd /mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ 
+hmf@gandalf:/mnt/ssd2/hmf/datasets/computer_vision/imagenet-1kb$ time scp ILSVRC2012_img_train_5.tar ubuntu@10.61.14.231:/mnt/data/train
+???
+ILSVRC2012_img_train_4.tar                                                                                                                        100%   23GB  42.1MB/s   09:19    
+
+real	9m20,705s
+user	1m17,901s
+sys	1m1,227s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar
+ILSVRC2012_img_train_5.tar
+```
+<!--- cSpell:enable --->
+
+Now unpack the archives and move their contents to folders:
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+662
+ubuntu@cese-produtech3r:/mnt/data/train$ time tar -xf ILSVRC2012_img_train_5.tar 
+???
+real	0m45.635s
+user	0m0.520s
+sys	0m18.877s
+ubuntu@cese-produtech3r:/mnt/data/train$ rm ILSVRC2012_img_train_5.tar
+ubuntu@cese-produtech3r:/mnt/data/train$ ls *.tar | wc -l
+???
+181
+ubuntu@cese-produtech3r:/mnt/data/train$ time find . -name "*.tar" | while read NAME ; do mkdir -p "${NAME%.tar}"; tar -xvf "${NAME}" -C "${NAME%.tar}"; rm -f "${NAME}"; done
+...
+???
+n03970156_7708.JPEG
+n03970156_10403.JPEG
+n03970156_8501.JPEG
+
+real	0m29.328s
+user	0m1.689s
+sys	0m25.741s
+ubuntu@cese-produtech3r:/mnt/data/train$ ls -d */ | wc -l
+???
+843
+ubuntu@cese-produtech3r:/mnt/data/train$ ls | wc -l
+???
+843
+```
+<!--- cSpell:enable --->
+
+Correct: 662+181 = 843
+
+
+
 
 <!--
  https://stackoverflow.com/questions/26411225/how-to-resume-scp-with-partially-copied-files
