@@ -18,6 +18,7 @@ pyyaml
 opencv-python
 submitit
 timm==0.4.5
+# timm==0.3.2
 tensorboard
 # tqdm
 # ml-collections

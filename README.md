@@ -1,5 +1,8 @@
 ## Masked Autoencoders: A PyTorch Implementation
 
+Original: https://github.com/facebookresearch/mae
+
+
 <p align="center">
   <img src="https://user-images.githubusercontent.com/11435359/146857310-f258c86c-fde6-48e8-9cee-badd2b21bd2c.png" width="480">
 </p>
@@ -389,6 +392,8 @@ Failed to initialize NVML: Unknown Error
 
 Required a rebuild of the Dev Container. 
 
+# Fine-tuning 
+
 <!--- cSpell:disable --->
 ```shell
 scode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_b
@@ -535,8 +540,169 @@ Transform: Compose(
 real    0m39.679s
 user    5m2.657s
 sys     0m44.833s
-vscode ➜ /workspaces/mae (test_1) $ ```
+vscode ➜ /workspaces/mae (test_1) $ 
+```
 <!--- cSpell:enable --->
+
+Results in line with the ViT-B original results (Acc@1 83.664 Acc@5 96.530 loss 0.731) (see [FINETUNE.md](./FINETUNE.md)). 
+
+# Pre-Training
+
+<!--- cSpell:disable --->
+```shell
+python submitit_pretrain.py \
+    --job_dir ${JOB_DIR} \
+    --nodes 8 \
+    --use_volta32 \
+    --batch_size 64 \
+    --model mae_vit_large_patch16 \
+    --norm_pix_loss \
+    --mask_ratio 0.75 \
+    --epochs 800 \
+    --warmup_epochs 40 \
+    --blr 1.5e-4 --weight_decay 0.05 \
+    --data_path ${IMAGENET_DIR}
+
+python submitit_pretrain.py \
+    --job_dir ./job \
+    --nodes 1 \
+    --ngpus 1 \
+    --use_volta32 \
+    --batch_size 64 \
+    --model mae_vit_large_patch16 \
+    --norm_pix_loss \
+    --mask_ratio 0.75 \
+    --epochs 800 \
+    --warmup_epochs 40 \
+    --blr 1.5e-4 --weight_decay 0.05 \
+    --data_path /mnt/data
+
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+Traceback (most recent call last):
+  File "/workspaces/mae/submitit_pretrain.py", line 15, in <module>
+    import main_pretrain as trainer
+  File "/workspaces/mae/main_pretrain.py", line 27, in <module>
+    assert timm.__version__ == "0.3.2"  # version check
+AssertionError
+```
+<!--- cSpell:enable --->
+
+`main_pretrain.py`
+
+<!--- cSpell:disable --->
+```python
+# assert timm.__version__ == "0.3.2"  # version check
+import timm.optim.optim_factory as optim_factory
+
+import util.misc as misc
+```
+<!--- cSpell:enable --->
+
+
+
+<!--- cSpell:disable --->
+```shell
+Traceback (most recent call last):
+  File "/workspaces/mae/submitit_pretrain.py", line 131, in <module>
+    main()
+  File "/workspaces/mae/submitit_pretrain.py", line 120, in main
+    args.dist_url = get_init_file().as_uri()
+  File "/workspaces/mae/submitit_pretrain.py", line 44, in get_init_file
+    os.makedirs(str(get_shared_folder()), exist_ok=True)
+  File "/workspaces/mae/submitit_pretrain.py", line 39, in get_shared_folder
+    raise RuntimeError("No shared folder available")
+RuntimeError: No shared folder available
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ echo $USER
+vscode
+vscode ➜ /workspaces/mae (test_1) $ mkdir checkpoint
+vscode ➜ /workspaces/mae (test_1) $ mkdir checkpoint/vscode
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```python
+def get_shared_folder() -> Path:
+    user = os.getenv("USER")
+    # HF: make this local 
+    checkpoint = "./checkpoint/"
+    if Path().is_dir():
+        p = Path(f"{checkpoint}/{user}/experiments")
+        p.mkdir(exist_ok=True)
+        return p
+    raise RuntimeError("No shared folder available")
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+Traceback (most recent call last):
+  File "/workspaces/mae/submitit_pretrain.py", line 133, in <module>
+    main()
+  File "/workspaces/mae/submitit_pretrain.py", line 122, in main
+    args.dist_url = get_init_file().as_uri()
+  File "/usr/lib/python3.10/pathlib.py", line 651, in as_uri
+    raise ValueError("relative path can't be expressed as a file URI")
+ValueError: relative path can't be expressed as a file URI
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```python
+def get_shared_folder() -> Path:
+    user = os.getenv("USER")
+    # HF: make this local 
+    checkpoint = "/workspaces/mae/checkpoint/"
+    if Path().is_dir():
+        p = Path(f"{checkpoint}/{user}/experiments")
+        p.mkdir(exist_ok=True)
+        return p
+    raise RuntimeError("No shared folder available")
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ python submitit_pretrain.py     --job_dir ./job     --nodes 1     --ngpus 1     --use_volta32     --batch_size 64     --model mae_vit_large_patch16     --norm_pix_loss     --mask_ratio 0.75     --epochs 800     --warmup_epochs 40     --blr 1.5e-4 --weight_decay 0.05     --data_path /mnt/data
+24437
+```
+<!--- cSpell:enable --->
+
+
+Look at the logs in the `./job` path. From `$PID_O_log.out`, we have (PID is output from command above):
+
+<!--- cSpell:disable --->
+```shell
+[13:17:26.603022] Sampler_train = <torch.utils.data.distributed.DistributedSampler object at 0x7f7dc4d02410>
+submitit ERROR (2024-03-20 13:17:29,070) - Submitted job triggered an exception
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+File "/workspaces/mae/util/pos_embed.py", line 56, in get_1d_sincos_pos_embed_from_grid
+    omega = np.arange(embed_dim // 2, dtype=np.float)
+  File "/home/vscode/.local/lib/python3.10/site-packages/numpy/__init__.py", line 324, in __getattr__
+    raise AttributeError(__former_attrs__[attr])
+AttributeError: module 'numpy' has no attribute 'float'.
+`np.float` was a deprecated alias for the builtin `float`. To avoid this error in existing code, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:
+    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations. Did you mean: 'cfloat'?
+```
+<!--- cSpell:enable --->
+
 
 
 
