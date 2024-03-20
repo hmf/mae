@@ -380,6 +380,165 @@ RuntimeError: No CUDA GPUs are available
 <!--- cSpell:enable --->
 
 
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ nvidia-smi 
+Failed to initialize NVML: Unknown Error
+```
+<!--- cSpell:enable --->
+
+Required a rebuild of the Dev Container. 
+
+<!--- cSpell:disable --->
+```shell
+scode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_b
+ase_patch16 --batch_size 16 --data_path /mnt/data
+Not using distributed mode
+[10:32:32.623323] job dir: /workspaces/mae
+[10:32:32.623400] Namespace(batch_size=16,
+epochs=50,
+accum_iter=1,
+model='vit_base_patch16',
+input_size=224,
+drop_path=0.1,
+clip_grad=None,
+weight_decay=0.05,
+lr=None,
+blr=0.001,
+layer_decay=0.75,
+min_lr=1e-06,
+warmup_epochs=5,
+color_jitter=None,
+aa='rand-m9-mstd0.5-inc1',
+smoothing=0.1,
+reprob=0.25,
+remode='pixel',
+recount=1,
+resplit=False,
+mixup=0,
+cutmix=0,
+cutmix_minmax=None,
+mixup_prob=1.0,
+mixup_switch_prob=0.5,
+mixup_mode='batch',
+finetune='',
+global_pool=True,
+data_path='/mnt/data',
+nb_classes=1000,
+output_dir='./output_dir',
+log_dir='./output_dir',
+device='cuda',
+seed=0,
+resume='checkpoints/mae_finetuned_vit_base.pth',
+start_epoch=0,
+eval=True,
+dist_eval=False,
+num_workers=10,
+pin_mem=True,
+world_size=1,
+local_rank=-1,
+dist_on_itp=False,
+dist_url='env://',
+distributed=False)
+[10:32:35.529315] Dataset ImageFolder
+    Number of datapoints: 1281167
+    Root location: /mnt/data/train
+    StandardTransform
+Transform: Compose(
+               RandomResizedCropAndInterpolation(size=(224, 224), scale=(0.08, 1.0), ratio=(0.75, 1.3333), interpolation=PIL.Image.BICUBIC)
+               RandomHorizontalFlip(p=0.5)
+               <timm.data.auto_augment.RandAugment object at 0x7f1aa230bf40>
+               ToTensor()
+               Normalize(mean=tensor([0.4850, 0.4560, 0.4060]), std=tensor([0.2290, 0.2240, 0.2250]))
+               <timm.data.random_erasing.RandomErasing object at 0x7f1aa235a230>
+           )
+[10:32:35.659536] Dataset ImageFolder
+    Number of datapoints: 50000
+    Root location: /mnt/data/val
+    StandardTransform
+Transform: Compose(
+               Resize(size=256, interpolation=bicubic, max_size=None, antialias=True)
+               CenterCrop(size=(224, 224))
+               ToTensor()
+               Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+           )
+[10:32:35.659710] Sampler_train = <torch.utils.data.distributed.DistributedSampler object at 0x7f1aa2359cc0>
+[10:32:37.122401] Model = VisionTransformer(
+  (patch_embed): PatchEmbed(
+    (proj): Conv2d(3, 768, kernel_size=(16, 16), stride=(16, 16))
+  )
+  (pos_drop): Dropout(p=0.0, inplace=False)
+  (blocks): ModuleList(
+    (0): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU(approximate='none')
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (1-11): 11 x Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): DropPath()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU(approximate='none')
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+  )
+  (pre_logits): Identity()
+  (head): Linear(in_features=768, out_features=1000, bias=True)
+  (fc_norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+)
+[10:32:37.122475] number of params (M): 86.57
+[10:32:37.122493] base lr: 1.00e-03
+[10:32:37.122503] actual lr: 6.25e-05
+[10:32:37.122512] accumulate grad iterations: 1
+[10:32:37.122521] effective batch size: 16
+[10:32:37.124830] criterion = LabelSmoothingCrossEntropy()
+[10:32:37.299692] Resume checkpoint checkpoints/mae_finetuned_vit_base.pth
+[10:32:38.093088] Test:  [   0/3125]  eta: 0:39:51  loss: 0.5996 (0.5996)  acc1: 93.7500 (93.7500)  acc5: 93.7500 (93.7500)  time: 0.7653  data: 0.3154  max mem: 593
+[10:32:38.175881] Test:  [  10/3125]  eta: 0:04:00  loss: 0.3770 (0.4417)  acc1: 93.7500 (92.0455)  acc5: 100.0000 (97.7273)  time: 0.0770  data: 0.0288  max mem: 593
+[10:32:38.264821] Test:  [  20/3125]  eta: 0:02:18  loss: 0.3465 (0.4567)  acc1: 93.7500 (91.6667)  acc5: 100.0000 (97.9167)  time: 0.0085  data: 0.0001  max mem: 593
+[10:32:38.354977] Test:  [  30/3125]  eta: 0:01:42  loss: 0.3863 (0.4657)  acc1: 87.5000 (90.5242)  acc5: 100.0000 (97.9839)  time: 0.0089  data: 0.0001  max mem: 593
+[10:32:38.444000] Test:  [  40/3125]  eta: 0:01:23  loss: 0.1875 (0.3969)  acc1: 93.7500 (92.3780)  acc5: 100.0000 (98.4756)  time: 0.0089  data: 0.0001  max mem: 593
+[10:32:38.534095] Test:  [  50/3125]  eta: 0:01:12  loss: 0.1508 (0.3756)  acc1: 100.0000 (93.1373)  acc5: 100.0000 (98.6520)  time: 0.0089  data: 0.0001  max mem: 593
+...
+[10:33:09.590530] Test:  [3080/3125]  eta: 0:00:00  loss: 0.3019 (0.7322)  acc1: 93.7500 (83.7147)  acc5: 100.0000 (96.5210)  time: 0.0112  data: 0.0019  max mem: 593
+[10:33:09.675610] Test:  [3090/3125]  eta: 0:00:00  loss: 0.1472 (0.7313)  acc1: 100.0000 (83.7128)  acc5: 100.0000 (96.5302)  time: 0.0109  data: 0.0019  max mem: 593
+[10:33:09.768789] Test:  [3100/3125]  eta: 0:00:00  loss: 0.1758 (0.7296)  acc1: 100.0000 (83.7613)  acc5: 100.0000 (96.5414)  time: 0.0088  data: 0.0001  max mem: 593
+[10:33:09.891028] Test:  [3110/3125]  eta: 0:00:00  loss: 0.1780 (0.7287)  acc1: 100.0000 (83.7874)  acc5: 100.0000 (96.5405)  time: 0.0107  data: 0.0015  max mem: 593
+[10:33:09.983262] Test:  [3120/3125]  eta: 0:00:00  loss: 0.3616 (0.7284)  acc1: 93.7500 (83.7772)  acc5: 100.0000 (96.5476)  time: 0.0107  data: 0.0017  max mem: 593
+[10:33:10.019760] Test:  [3124/3125]  eta: 0:00:00  loss: 0.4602 (0.7298)  acc1: 87.5000 (83.7420)  acc5: 100.0000 (96.5380)  time: 0.0088  data: 0.0003  max mem: 593
+[10:33:10.066181] Test: Total time: 0:00:32 (0.0105 s / it)
+[10:33:10.066259] * Acc@1 83.742 Acc@5 96.538 loss 0.730
+[10:33:10.066543] Accuracy of the network on the 50000 test images: 83.7%
+
+real    0m39.679s
+user    5m2.657s
+sys     0m44.833s
+vscode ➜ /workspaces/mae (test_1) $ ```
+<!--- cSpell:enable --->
+
+
 
 
 <!--- cSpell:disable --->
