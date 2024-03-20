@@ -293,7 +293,18 @@ Here are the errors we got for this test:
 1. `FileNotFoundError: [Errno 2] No such file or directory: './data/train'`
 1. `FileNotFoundError: Couldn't find any class folder in ./data/train`
 
-Next we tried to get the ImageNet dataset from HuggingFace. For a full account of what was tried, see [these notes](./imagenet1k.md).
+Next we tried to get the ImageNet dataset from HuggingFace. For a full account of what was tried, see [these notes](./imagenet1k.md). To summarize we had to:
+
+1. Download [test_images.tar.gz](https://huggingface.co/datasets/imagenet-1k/resolve/main/data/test_images.tar.gz?download=true) from the HuggingFace site
+1. Download the training and validation data sets from the links in [this page](https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4):
+   1. wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_train.tar --no-check-certificate
+   1. wget https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_val.tar --no-check-certificate
+1. Split the training dataset into small data sets because we did not have enough space
+1. Copy each split extract the tar files within and then execute the command in [this page](https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4) to create the class folders;
+1. Copy the validation data set and execute the bash script in the [same page](https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4) to create the class folders
+1. Whenever we extracted data, we had to remove the archives to free space. In the last training split, we had to copy the archive to a temporary folder and extracted the data from there;
+1. Copied and extracted the test dataset last. Did not fit so 362 images were lost. Could not find the labels for these images.
+
 
 These are the set of folders that are expected by the code:
 
@@ -303,7 +314,6 @@ vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/train
 vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/test
 vscode ➜ /workspaces/mae (test_1) $ mkdir ./data/val
 ```
-
 
 Make sure you can launch the dev container (Docker). The container must also bind to the share.  
 
@@ -321,6 +331,7 @@ python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth -
 ```
 <!--- cSpell:enable --->
 
+The following erro occurs if the files are not split into class folders (training has 1300 per class, and we have 1000 classes):
 
 <!--- cSpell:disable --->
 ```shell
@@ -342,6 +353,32 @@ Traceback (most recent call last):
 FileNotFoundError: Couldn't find any class folder in /mnt/data/val.
 ```
 <!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+[10:08:13.470830] Sampler_train = <torch.utils.data.distributed.DistributedSampler object at 0x7fe534a3e500>
+Traceback (most recent call last):
+  File "/workspaces/mae/main_finetune.py", line 356, in <module>
+    main(args)
+  File "/workspaces/mae/main_finetune.py", line 259, in main
+    model.to(device)
+  File "/home/vscode/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1152, in to
+    return self._apply(convert)
+  File "/home/vscode/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 802, in _apply
+    module._apply(fn)
+  File "/home/vscode/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 802, in _apply
+    module._apply(fn)
+  File "/home/vscode/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 825, in _apply
+    param_applied = fn(param)
+  File "/home/vscode/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1150, in convert
+    return t.to(device, dtype if t.is_floating_point() or t.is_complex() else None, non_blocking)
+  File "/home/vscode/.local/lib/python3.10/site-packages/torch/cuda/__init__.py", line 302, in _lazy_init
+    torch._C._cuda_init()
+RuntimeError: No CUDA GPUs are available
+```
+<!--- cSpell:enable --->
+
 
 
 

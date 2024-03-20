@@ -1705,10 +1705,34 @@ ubuntu@cese-produtech3r:/mnt/data$ find val/ -name "*.JPEG" | wc -l
 ```
 <!--- cSpell:enable --->
 
-Took a bout a minute toc reate the classes
+Took a bout a minute to reate the classes folders. 
 
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ ls /tmp/test*.tar.*
+/tmp/test_images.tar.gz
+```
+<!--- cSpell:enable --->
 
-wget -qO- https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh | bash
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~$ cd /mnt/data/
+ubuntu@cese-produtech3r:/mnt/data$ mkdir test
+ubuntu@cese-produtech3r:/mnt/data/val$ time tar -xvf /tmp/test_images.tar.gz -C /mnt/data/test
+...
+tar: ILSVRC2012_test_00060671.JPEG: Cannot write: No space left on device
+ILSVRC2012_test_00014752.JPEG
+tar: ILSVRC2012_test_00014752.JPEG: Cannot write: No space left on device
+tar: Exiting with failure status due to previous errors
+
+real	1m11.568s
+user	1m3.742s
+sys	0m19.010s
+ubuntu@cese-produtech3r:/mnt/data$ cd test
+ubuntu@cese-produtech3r:/mnt/data/test$ ls | wc -l
+99638
+```
+<!--- cSpell:enable --->
 
 
 <!--
