@@ -396,8 +396,7 @@ Required a rebuild of the Dev Container.
 
 <!--- cSpell:disable --->
 ```shell
-scode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_b
-ase_patch16 --batch_size 16 --data_path /mnt/data
+scode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 16 --data_path /mnt/data
 Not using distributed mode
 [10:32:32.623323] job dir: /workspaces/mae
 [10:32:32.623400] Namespace(batch_size=16,
@@ -544,7 +543,273 @@ vscode ➜ /workspaces/mae (test_1) $
 ```
 <!--- cSpell:enable --->
 
-Results in line with the ViT-B original results (Acc@1 83.664 Acc@5 96.530 loss 0.731) (see [FINETUNE.md](./FINETUNE.md)). 
+Results in line with the ViT-B original results (Acc@1 83.664 Acc@5 96.530 loss 0.731) (see [FINETUNE.md](./FINETUNE.md)). We now increase the batch size from `16` to `32`: 
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 32 --data_path /mnt/data
+```
+<!--- cSpell:enable --->
+
+we get:
+
+<!--- cSpell:disable --->
+```shell
+[08:48:18.466517] Test:  [1562/1563]  eta: 0:00:00  loss: 0.3426 (0.7301)  acc1: 93.7500 (83.7400)  acc5: 100.0000 (96.5360)  time: 0.0307  data: 0.0086  max mem: 687
+[08:48:18.517925] Test: Total time: 0:00:31 (0.0202 s / it)
+[08:48:18.518002] * Acc@1 83.740 Acc@5 96.536 loss 0.730
+[08:48:18.518289] Accuracy of the network on the 50000 test images: 83.7%
+
+real    0m38.950s
+user    4m49.123s
+sys     0m49.274s
+```
+<!--- cSpell:enable --->
+
+Used 1351MiB of 46068MiB GPU memory. 
+
+We now increase the batch size from `32` to `64`: 
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 64 --data_path /mnt/data
+```
+<!--- cSpell:enable --->
+
+We get:
+
+<!--- cSpell:disable --->
+```shell
+[08:55:14.947099] Test: Total time: 0:00:32 (0.0413 s / it)
+[08:55:14.947231] * Acc@1 83.740 Acc@5 96.538 loss 0.731
+[08:55:14.947445] Accuracy of the network on the 50000 test images: 83.7%
+
+real    0m39.349s
+user    4m43.379s
+sys     0m52.450s
+```
+<!--- cSpell:enable --->
+
+
+Used 2159MiB of 46068MiB GPU memory. 
+
+We now increase the batch size from `32` to `64`: 
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 128 --data_path /mnt/data
+```
+<!--- cSpell:enable --->
+
+We get:
+
+<!--- cSpell:disable --->
+```shell
+[09:00:25.394188] Test: Total time: 0:00:33 (0.0868 s / it)
+[09:00:25.394260] * Acc@1 83.740 Acc@5 96.538 loss 0.731
+[09:00:25.394572] Accuracy of the network on the 50000 test images: 83.7%
+
+real    0m41.071s
+user    4m35.950s
+sys     0m53.903s
+```
+<!--- cSpell:enable --->
+
+
+The **effective batch size** is 32 (batch_size per gpu) * 4 (nodes) * 8 (gpus per node) = 1024. Training time is ~7h11m in 32 V100 GPUs. We now experiment with the effective batch size on a single GPU. 
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_base.pth --model vit_base_patch16 --batch_size 1024 --data_path /mnt/data
+```
+<!--- cSpell:enable --->
+
+We get: 
+
+<!--- cSpell:disable --->
+```shell
+[10:52:41.944991] Test: Total time: 0:00:45 (0.9267 s / it)
+[10:52:41.945139] * Acc@1 83.740 Acc@5 96.538 loss 0.729
+[10:52:41.945375] Accuracy of the network on the 50000 test images: 83.7%
+
+real    0m54.010s
+user    4m30.717s
+sys     1m3.246s
+```
+<!--- cSpell:enable --->
+
+
+Used 2159MiB of 46068MiB GPU memory. 
+
+The runs above are very consistent. This is to be expected because we are fine tuning on the same data as the training data. We now experiment on the large and huge models on a single GPU to see how much memory is required. Here are the sizes of the pickled models:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae/checkpoints (test_1) $ ls -lh
+total 3.9G
+-rw-r--r-- 1 vscode vscode 331M Dec 29  2021 mae_finetuned_vit_base.pth
+-rw-r--r-- 1 vscode vscode 2.4G Dec 29  2021 mae_finetuned_vit_huge.pth
+-rw-r--r-- 1 vscode vscode 1.2G Dec 29  2021 mae_finetuned_vit_large.pth
+```
+<!--- cSpell:enable --->
+
+### Large model
+
+Download the large model: 
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ cd checkpoints
+vscode ➜ /workspaces/mae/checkpoints (test_1) $ wget https://dl.fbaipublicfiles.com/mae/finetune/mae_finetuned_vit_large.pth
+--2024-04-17 10:55:24--  https://dl.fbaipublicfiles.com/mae/finetune/mae_finetuned_vit_large.pth
+Resolving dl.fbaipublicfiles.com (dl.fbaipublicfiles.com)... 18.154.41.8, 18.154.41.12, 18.154.41.96, ...
+Connecting to dl.fbaipublicfiles.com (dl.fbaipublicfiles.com)|18.154.41.8|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 1217415191 (1.1G) [binary/octet-stream]
+Saving to: ‘mae_finetuned_vit_large.pth’
+
+mae_finetuned_vit_large.pth       100%[==========================================================>]   1.13G  4.86MB/s    in 2m 29s  
+
+2024-04-17 10:57:54 (7.78 MB/s) - ‘mae_finetuned_vit_large.pth’ saved [1217415191/1217415191]
+
+vscode ➜ /workspaces/mae/checkpoints (test_1) $ 
+```
+<!--- cSpell:enable --->
+
+Fine tune the large model:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_large.pth --model vit_large_patch16 --batch_size 1024 --data_path /mnt/data
+```
+<!--- cSpell:enable --->
+
+The **effective batch size** is 32 (batch_size per gpu) * 4 (nodes) * 8 (gpus per node) = 1024. Training time is ~8h52m in 32 V100 GPUs. TODO: increase batch size to 32 * 32 * 8 = 8192.
+
+We get:
+
+<!--- cSpell:disable --->
+```shell
+[11:14:17.064829] Test: Total time: 0:01:51 (2.2821 s / it)
+[11:14:17.064972] * Acc@1 85.962 Acc@5 97.560 loss 0.645
+[11:14:17.065211] Accuracy of the network on the 50000 test images: 86.0%
+
+real    2m4.937s
+user    4m50.669s
+sys     2m6.140s
+```
+<!--- cSpell:enable --->
+
+Used 12999MiB of 46068MiB GPU memory.
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_large.pth --model vit_large_patch16 --batch_size 8192 --data_path /mnt/data
+```
+<!--- cSpell:enable --->
+
+Fails:
+
+<!--- cSpell:disable --->
+```shell
+[11:53:57.208794] Resume checkpoint checkpoints/mae_finetuned_vit_large.pth
+Killed
+
+real    1m28.367s
+user    0m29.820s
+sys     0m25.562s
+```
+<!--- cSpell:enable --->
+
+Batch size 1024 used 12999MiB of 46068MiB GPU memory. (2m4.937s)
+Batch size 2048 used 24851MiB of 46068MiB GPU memory. (2m33.231s)
+Batch size 4096 used 42069MiB of 46068MiB GPU memory. (2m36.484s)
+Batch size 5120 used ? MiB of 46068MiB GPU memory. (Out of memory)
+
+
+### Huge model
+
+Download the large model: 
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ cd checkpoints
+vscode ➜ /workspaces/mae/checkpoints (test_1) $ wget https://dl.fbaipublicfiles.com/mae/finetune/mae_finetuned_vit_huge.pth
+--2024-04-17 10:59:24--  https://dt/
+Resolving dt (dt)... failed: Name or service not known.
+wget: unable to resolve host address ‘dt’
+--2024-04-17 10:59:24--  https://dl.fbaipublicfiles.com/mae/finetune/mae_finetuned_vit_huge.pth
+Resolving dl.fbaipublicfiles.com (dl.fbaipublicfiles.com)... 18.154.41.12, 18.154.41.57, 18.154.41.96, ...
+Connecting to dl.fbaipublicfiles.com (dl.fbaipublicfiles.com)|18.154.41.12|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 2528327351 (2.4G) [binary/octet-stream]
+Saving to: ‘mae_finetuned_vit_huge.pth’
+
+mae_finetuned_vit_huge.pth        100%[==========================================================>]   2.35G  29.1MB/s    in 1m 40s  
+
+2024-04-17 11:01:05 (24.2 MB/s) - ‘mae_finetuned_vit_huge.pth’ saved [2528327351/2528327351]
+
+FINISHED --2024-04-17 11:01:05--
+Total wall clock time: 1m 41s
+Downloaded: 1 files, 2.4G in 1m 40s (24.2 MB/s)
+```
+<!--- cSpell:enable --->
+
+Fine tune the huge model:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_huge.pth --model vit_huge_patch14 --batch_size 1024 --data_path /mnt/data
+```
+<!--- cSpell:enable --->
+
+The **effective batch size** is 32 (batch_size per gpu) * 4 (nodes) * 8 (gpus per node) = 1024. Training time is ~13h9m in 64 V100 GPU. TODO: increase batch size to 32 * 64 * 8 = 16384.
+
+We get:
+
+<!--- cSpell:disable --->
+```shell
+[11:32:49.066282] Test: Total time: 0:04:30 (5.5208 s / it)
+[11:32:49.066401] * Acc@1 86.884 Acc@5 98.076 loss 0.584
+[11:32:49.066594] Accuracy of the network on the 50000 test images: 86.9%
+
+real    4m50.013s
+user    5m24.819s
+sys     4m31.485s
+```
+<!--- cSpell:enable --->
+
+
+Used 21261MiB of 46068MiB GPU memory.
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_huge.pth --model vit_huge_patch14 --batch_size 8192 --data_path /mnt/data
+```
+<!--- cSpell:enable --->
+
+Fine tuning fails:
+
+<!--- cSpell:disable --->
+```shell
+[11:50:05.374859] criterion = LabelSmoothingCrossEntropy()
+[11:50:07.956181] Resume checkpoint checkpoints/mae_finetuned_vit_huge.pth
+Killed
+
+real    1m51.307s
+user    0m49.190s
+sys     0m30.752s
+```
+<!--- cSpell:enable --->
+
+
+Batch size 1024 used 21261MiB of 46068MiB GPU memory. (4m50.013s)
+Batch size 2048 used 39427MiB of 46068MiB GPU memory. (4m58.468s)
+Batch size 4096 used ? MiB of 46068MiB GPU memory. (Out of memory)
+Batch size 3072 used ? MiB of 46068MiB GPU memory. (Out of memory)
+
+Used ? MiB of 46068MiB GPU memory.
+
 
 # Pre-Training
 
@@ -703,6 +968,34 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 ```
 <!--- cSpell:enable --->
 
+https://github.com/jdb78/pytorch-forecasting/pull/1257
+https://github.com/pytorch/pytorch/issues/91329
+
+
+<!--- cSpell:disable --->
+```shell
+def get_1d_sincos_pos_embed_from_grid(embed_dim, pos):
+    """
+    embed_dim: output dimension for each position
+    pos: a list of positions to be encoded: size (M,)
+    out: (M, D)
+    """
+    assert embed_dim % 2 == 0
+    # HF: omega = np.arange(embed_dim // 2, dtype=np.float)
+    omega = np.arange(embed_dim // 2, dtype=float)
+    omega /= embed_dim / 2.
+    omega = 1. / 10000**omega  # (D/2,)
+
+    pos = pos.reshape(-1)  # (M,)
+    out = np.einsum('m,d->md', pos, omega)  # (M, D/2), outer product
+
+    emb_sin = np.sin(out) # (M, D/2)
+    emb_cos = np.cos(out) # (M, D/2)
+
+    emb = np.concatenate([emb_sin, emb_cos], axis=1)  # (M, D)
+    return emb
+```
+<!--- cSpell:enable --->
 
 
 
@@ -722,5 +1015,30 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 ```shell
 ```
 <!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+
 
 
