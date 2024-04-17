@@ -1016,8 +1016,109 @@ def get_1d_sincos_pos_embed_from_grid(embed_dim, pos):
 <!--- cSpell:enable --->
 
 After the changes, training starts. Each iteration was taking about 0.1748 seconds. 
+Batch size 641024 used 13077MiB of 46068MiB GPU memory. 
+loss: 1.7197 (1.7197)
+Epoch: [0]  [ 3120/20018]  eta: 0:49:08  lr: 0.000000  loss: 0.9607 (1.2687)  time: 0.1749 
+Epoch: [1]  [ 3420/20018]  eta: 0:48:35  lr: 0.000001  loss: 0.6802 (0.6893)  time: 0.1759 
+Epoch: [2]  [ 3320/20018]  eta: 0:48:57  lr: 0.000002  loss: 0.6439 (0.6439)  time: 0.1788 
+Epoch: [2]  [16800/20018]  eta: 0:09:26  lr: 0.000003  loss: 0.6071 (0.6289)  time: 0.1758  data: 0.0002  max mem: 11603
+Epoch: [3]  [ 1320/20018]  eta: 0:54:54  lr: 0.000003  loss: 0.6029 (0.6034)  time: 0.1760  data: 0.0002  max mem: 11603
 
-TODO, remove `--use_volta32`?
+
+TODO: remove `--use_volta32`?
+TODO: how do we stop the learning?
+  Uses submitit
+https://github.com/facebookincubator/submitit
+Python 3.8+ toolbox for submitting jobs to Slurm 
+"Submitit allows to switch seamlessly between executing on Slurm or locally."
+https://hydra.cc/docs/plugins/submitit_launcher/
+
+TODO: use main_pretrain ?  
+  used in submit_pretrain script
+
+  
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ time python main_finetune.py --eval --resume checkpoints/mae_finetuned_vit_huge.pth --model vit_huge_patch14 --batch_size 8192 --data_path /mnt/data
+```
+<!--- cSpell:enable --->
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ python submitit_pretrain.py     --job_dir ./job     --nodes 1     --ngpus 1     --use_volta32     --batch_size 64     --model mae_vit_large_patch16     --norm_pix_loss     --mask_ratio 0.75     --epochs 800     --warmup_epochs 40     --blr 1.5e-4 --weight_decay 0.05     --data_path /mnt/data
+54226
+```
+<!--- cSpell:enable --->
+
+
+<!--- cSpell:disable --->
+```python
+    parser.add_argument('--batch_size', default=64, type=int,
+                        help='Batch size per GPU (effective batch size is batch_size * accum_iter * # gpus')
+    parser.add_argument('--epochs', default=400, type=int)
+    parser.add_argument('--accum_iter', default=1, type=int,
+                        help='Accumulate gradient iterations (for increasing the effective batch size under memory constraints)')
+
+    # Model parameters
+    parser.add_argument('--model', default='mae_vit_large_patch16', type=str, metavar='MODEL',
+                        help='Name of model to train')
+
+    parser.add_argument('--input_size', default=224, type=int,
+                        help='images input size')
+
+    parser.add_argument('--mask_ratio', default=0.75, type=float,
+                        help='Masking ratio (percentage of removed patches).')
+
+    parser.add_argument('--norm_pix_loss', action='store_true',
+                        help='Use (per-patch) normalized pixels as targets for computing loss')
+    parser.set_defaults(norm_pix_loss=False)
+
+    # Optimizer parameters
+    parser.add_argument('--weight_decay', type=float, default=0.05,
+                        help='weight decay (default: 0.05)')
+
+    parser.add_argument('--lr', type=float, default=None, metavar='LR',
+                        help='learning rate (absolute lr)')
+    parser.add_argument('--blr', type=float, default=1e-3, metavar='LR',
+                        help='base learning rate: absolute_lr = base_lr * total_batch_size / 256')
+    parser.add_argument('--min_lr', type=float, default=0., metavar='LR',
+                        help='lower lr bound for cyclic schedulers that hit 0')
+
+    parser.add_argument('--warmup_epochs', type=int, default=40, metavar='N',
+                        help='epochs to warmup LR')
+
+    # Dataset parameters
+    parser.add_argument('--data_path', default='/datasets01/imagenet_full_size/061417/', type=str,
+                        help='dataset path')
+
+    parser.add_argument('--output_dir', default='./output_dir',
+                        help='path where to save, empty for no saving')
+    parser.add_argument('--log_dir', default='./output_dir',
+                        help='path where to tensorboard log')
+    parser.add_argument('--device', default='cuda',
+                        help='device to use for training / testing')
+    parser.add_argument('--seed', default=0, type=int)
+    parser.add_argument('--resume', default='',
+                        help='resume from checkpoint')
+
+    parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
+                        help='start epoch')
+    parser.add_argument('--num_workers', default=10, type=int)
+    parser.add_argument('--pin_mem', action='store_true',
+                        help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
+    parser.add_argument('--no_pin_mem', action='store_false', dest='pin_mem')
+    parser.set_defaults(pin_mem=True)
+
+    # distributed training parameters
+    parser.add_argument('--world_size', default=1, type=int,
+                        help='number of distributed processes')
+    parser.add_argument('--local_rank', default=-1, type=int)
+    parser.add_argument('--dist_on_itp', action='store_true')
+    parser.add_argument('--dist_url', default='env://',
+                        help='url used to set up distributed training')
+```
+<!--- cSpell:enable --->
+
 
 
 <!--- cSpell:disable --->
