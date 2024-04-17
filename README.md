@@ -808,9 +808,6 @@ Batch size 2048 used 39427MiB of 46068MiB GPU memory. (4m58.468s)
 Batch size 4096 used ? MiB of 46068MiB GPU memory. (Out of memory)
 Batch size 3072 used ? MiB of 46068MiB GPU memory. (Out of memory)
 
-Used ? MiB of 46068MiB GPU memory.
-
-
 # Pre-Training
 
 <!--- cSpell:disable --->
@@ -940,10 +937,31 @@ def get_shared_folder() -> Path:
 <!--- cSpell:disable --->
 ```shell
 vscode ➜ /workspaces/mae (test_1) $ python submitit_pretrain.py     --job_dir ./job     --nodes 1     --ngpus 1     --use_volta32     --batch_size 64     --model mae_vit_large_patch16     --norm_pix_loss     --mask_ratio 0.75     --epochs 800     --warmup_epochs 40     --blr 1.5e-4 --weight_decay 0.05     --data_path /mnt/data
-24437
+54226
 ```
 <!--- cSpell:enable --->
 
+The number output is the submit job ID. 
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ ps ax | grep -i python | grep -i mae
+  54226 pts/1    S      0:00 /usr/local/python/current/bin/python -m submitit.local._local /workspaces/mae/job
+  54227 pts/1    Rl     3:31 /usr/local/python/current/bin/python -u -m submitit.core._submit /workspaces/mae/job
+  54313 pts/1    Rl     0:40 /usr/local/python/current/bin/python -u -m submitit.core._submit /workspaces/mae/job
+  54327 pts/1    Sl     0:41 /usr/local/python/current/bin/python -u -m submitit.core._submit /workspaces/mae/job
+  54341 pts/1    Sl     0:41 /usr/local/python/current/bin/python -u -m submitit.core._submit /workspaces/mae/job
+  54342 pts/1    Sl     0:40 /usr/local/python/current/bin/python -u -m submitit.core._submit /workspaces/mae/job
+  54356 pts/1    Sl     0:41 /usr/local/python/current/bin/python -u -m submitit.core._submit /workspaces/mae/job
+  54383 pts/1    Sl     0:40 /usr/local/python/current/bin/python -u -m submitit.core._submit /workspaces/mae/job
+  54397 pts/1    Sl     0:41 /usr/local/python/current/bin/python -u -m submitit.core._submit /workspaces/mae/job
+  54398 pts/1    Sl     0:41 /usr/local/python/current/bin/python -u -m submitit.core._submit /workspaces/mae/job
+  54399 pts/1    Rl     0:41 /usr/local/python/current/bin/python -u -m submitit.core._submit /workspaces/mae/job
+  54439 pts/1    Rl     0:40 /usr/local/python/current/bin/python -u -m submitit.core._submit /workspaces/mae/job
+```
+<!--- cSpell:enable --->
+
+To remove these processes we need to remove the `submitit.local._local` process plus one other `submitit.core._submit`. 
 
 Look at the logs in the `./job` path. From `$PID_O_log.out`, we have (PID is output from command above):
 
@@ -997,7 +1015,9 @@ def get_1d_sincos_pos_embed_from_grid(embed_dim, pos):
 ```
 <!--- cSpell:enable --->
 
+After the changes, training starts. Each iteration was taking about 0.1748 seconds. 
 
+TODO, remove `--use_volta32`?
 
 
 <!--- cSpell:disable --->
