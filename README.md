@@ -1015,6 +1015,10 @@ def get_1d_sincos_pos_embed_from_grid(embed_dim, pos):
 ```
 <!--- cSpell:enable --->
 
+First pre-train run failed with timeout. 
+
+<!--- cSpell:disable --->
+```shell
 After the changes, training starts. Each iteration was taking about 0.1748 seconds. 
 Batch size 641024 used 13077MiB of 46068MiB GPU memory. 
 loss: 1.7197 (1.7197)
@@ -1023,6 +1027,177 @@ Epoch: [1]  [ 3420/20018]  eta: 0:48:35  lr: 0.000001  loss: 0.6802 (0.6893)  ti
 Epoch: [2]  [ 3320/20018]  eta: 0:48:57  lr: 0.000002  loss: 0.6439 (0.6439)  time: 0.1788 
 Epoch: [2]  [16800/20018]  eta: 0:09:26  lr: 0.000003  loss: 0.6071 (0.6289)  time: 0.1758  data: 0.0002  max mem: 11603
 Epoch: [3]  [ 1320/20018]  eta: 0:54:54  lr: 0.000003  loss: 0.6029 (0.6034)  time: 0.1760  data: 0.0002  max mem: 11603
+Epoch: [22]  [ 2300/20018]  eta: 0:52:09  lr: 0.000021  loss: 0.4752 (0.4681)  time: 0.1766  data: 0.0002  max mem: 11603
+Epoch: [26]  [19060/20018]  eta: 0:02:49  lr: 0.000025  loss: 0.4595 (0.4609)  time: 0.1762  data: 0.0002  max mem: 11603
+Epoch: [44]  [ 7620/20018]  eta: 0:36:29  lr: 0.000037  loss: 0.4408 (0.4436)  time: 0.1765  data: 0.0002  max mem: 11603
+Epoch: [46]  [11140/20018]  eta: 0:26:05  lr: 0.000037  loss: 0.4369 (0.4424)  time: 0.1762  data: 0.0002  max mem: 11603
+Epoch: [47]  [13460/20018]  eta: 0:19:14  lr: 0.000037  loss: 0.4327 (0.4417)  time: 0.1771  data: 0.0002  max mem: 11603
+Epoch: [74]  [  100/20018]  eta: 1:00:23  lr: 0.000037  loss: 0.4250 (0.4318)  time: 0.1760  data: 0.0002  max mem: 11603
+Epoch: [74]  [  120/20018]  eta: 0:59:59  lr: 0.000037  loss: 0.4369 (0.4320)  time: 0.1757  data: 0.0002  max mem: 11603
+submitit INFO (2024-04-20 13:17:57,815) - Job has timed out. Ran 4348 minutes out of requested 4320 minutes.
+submitit WARNING (2024-04-20 13:17:57,816) - Caught signal SIGUSR2 on 027d94ee8dc4: this job is timed-out.
+submitit INFO (2024-04-20 13:17:57,816) - Calling checkpoint method.
+[13:17:57.816936] Requeuing  Namespace(batch_size=64, epochs=800, accum_iter=1, model='mae_vit_large_patch16', input_size=224, mask_ratio=0.75, norm_pix_loss=True, weight_decay=0.05, lr=3.75e-05, blr=0.00015, min_lr=0.0, warmup_epochs=40, data_path='/mnt/data', output_dir=PosixPath('job'), log_dir=PosixPath('job'), device='cuda', seed=0, resume='', start_epoch=0, num_workers=10, pin_mem=True, world_size=1, local_rank=-1, dist_on_itp=False, dist_url='file:///workspaces/mae/checkpoint/vscode/experiments/85e9ebe5aea9451297ec2708d2665c40_init', ngpus=1, nodes=1, timeout=4320, job_dir='./job', partition='learnfair', use_volta32=True, comment='', gpu=0, rank=0, distributed=False)
+submitit INFO (2024-04-20 13:17:57,818) - Requeued job 56908 (2 remaining timeouts)
+submitit INFO (2024-04-20 13:17:59,720) - Starting with JobEnvironment(job_id=56908, hostname=027d94ee8dc4, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2024-04-20 13:17:59,720) - Loading pickle: /workspaces/mae/job/56908_submitted.pkl
+Process group: 1 tasks, rank: 0
+Not using distributed mode
+[13:18:02.759105] job dir: /workspaces/mae
+[13:18:02.759236] Namespace(batch_size=64,
+epochs=800,
+accum_iter=1,
+model='mae_vit_large_patch16',
+input_size=224,
+mask_ratio=0.75,
+norm_pix_loss=True,
+weight_decay=0.05,
+lr=3.75e-05,
+blr=0.00015,
+min_lr=0.0,
+warmup_epochs=40,
+data_path='/mnt/data',
+output_dir=PosixPath('job'),
+log_dir=PosixPath('job'),
+device='cuda',
+seed=0,
+resume='',
+start_epoch=0,
+num_workers=10,
+pin_mem=True,
+world_size=1,
+local_rank=-1,
+dist_on_itp=False,
+dist_url='file:///workspaces/mae/checkpoint/vscode/experiments/85e9ebe5aea9451297ec2708d2665c40_init',
+ngpus=1,
+nodes=1,
+timeout=4320,
+job_dir='./job',
+partition='learnfair',
+use_volta32=True,
+comment='',
+gpu=0,
+rank=0,
+distributed=False)
+[13:18:06.118500] Dataset ImageFolder
+    Number of datapoints: 1281167
+    Root location: /mnt/data/train
+    StandardTransform
+Transform: Compose(
+               RandomResizedCrop(size=(224, 224), scale=(0.2, 1.0), ratio=(0.75, 1.3333), interpolation=bicubic, antialias=True)
+               RandomHorizontalFlip(p=0.5)
+               ToTensor()
+               Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+           )
+[13:18:06.118736] Sampler_train = <torch.utils.data.distributed.DistributedSampler object at 0x7f97f43023e0>
+submitit ERROR (2024-04-20 13:18:10,758) - Submitted job triggered an exception
+```
+<!--- cSpell:enable --->
+
+This value is set via the command line arguments:
+
+<!--- cSpell:disable --->
+```shell
+def parse_args():
+    trainer_parser = trainer.get_args_parser()
+    parser = argparse.ArgumentParser("Submitit for MAE pretrain", parents=[trainer_parser])
+    parser.add_argument("--ngpus", default=8, type=int, help="Number of gpus to request on each node")
+    parser.add_argument("--nodes", default=2, type=int, help="Number of nodes to request")
+    parser.add_argument("--timeout", default=4320, type=int, help="Duration of the job")
+```
+<!--- cSpell:enable --->
+
+Seems to be set to 72 hours. Lest set that to 720 hours (add `--timeout 43200` to the command line). From the log above we also see that the loss rate decreases very slow after epoch 22. We therefore increase the batch size to the maximum that we can as per the pervious fine-tune experiments. So we set `--batch_size 4096`.
+
+The log above also reports writing the model the folder below, which seems to be empty:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ ls -lh /workspaces/mae/checkpoint/vscode/experiments/
+total 0
+```
+<!--- cSpell:enable --->
+
+We do have checkpoints in the `./job` folder which are created every 20 epochs. 
+
+Try again:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ python submitit_pretrain.py     --job_dir ./job     --nodes 1     --ngpus 1     --use_volta32     --batch_size 4096     --model mae_vit_large_patch16     --norm_pix_loss     --mask_ratio 0.75     --epochs 800     --warmup_epochs 40     --blr 1.5e-4 --weight_decay 0.05     --data_path /mnt/data --timeout 43200
+528729
+```
+<!--- cSpell:enable --->
+
+Empty?
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ ps ax | grep -i python | grep -i mae
+```
+<!--- cSpell:enable --->
+
+Check the jobs:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ ls ./job/
+528729_0_log.err      56908_0_log.err      checkpoint-0.pth   events.out.tfevents.1713357808.027d94ee8dc4.54227.0   log.txt
+528729_0_log.out      56908_0_log.out      checkpoint-20.pth  events.out.tfevents.1713358210.027d94ee8dc4.56909.0
+528729_0_result.pkl   56908_0_result.pkl   checkpoint-40.pth  events.out.tfevents.1713619086.027d94ee8dc4.356671.0
+528729_submitted.pkl  56908_submitted.pkl  checkpoint-60.pth  events.out.tfevents.1713786337.027d94ee8dc4.528730.0
+vscode ➜ /workspaces/mae (test_1) $ tail ./job/528729_0_log.err
+    module._apply(fn)
+  File "/home/vscode/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 802, in _apply
+    module._apply(fn)
+  File "/home/vscode/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 825, in _apply
+    param_applied = fn(param)
+  File "/home/vscode/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1150, in convert
+    return t.to(device, dtype if t.is_floating_point() or t.is_complex() else None, non_blocking)
+  File "/home/vscode/.local/lib/python3.10/site-packages/torch/cuda/__init__.py", line 302, in _lazy_init
+    torch._C._cuda_init()
+RuntimeError: No CUDA GPUs are available
+```
+<!--- cSpell:enable --->
+
+Check the GPU:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ nvidia-smi 
+Failed to initialize NVML: Unknown Error
+```
+<!--- cSpell:enable --->
+
+Had to reboot the VM.
+
+
+Try again. Out of memory with `--batch_size 4096`. Out of memory with `--batch_size 3072`. Out of memory with `--batch_size 2048`. Out of memory with `--batch_size 1024`. Out of memory with `--batch_size 512`.:
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ python submitit_pretrain.py     --job_dir ./job     --nodes 1     --ngpus 1     --use_volta32     --batch_size 256     --model mae_vit_large_patch16     --norm_pix_loss     --mask_ratio 0.75     --epochs 800     --warmup_epochs 40     --blr 1.5e-4 --weight_decay 0.05     --data_path /mnt/data --timeout 43200
+2475
+3978
+5569
+7894
+8745
+```
+<!--- cSpell:enable --->
+
+With a batch size of 35713MiB of 46068MiB GPU memory
+
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
+<!--- cSpell:disable --->
+```shell
+```
+<!--- cSpell:enable --->
+
 
 
 TODO: remove `--use_volta32`?
@@ -1121,15 +1296,6 @@ vscode ➜ /workspaces/mae (test_1) $ python submitit_pretrain.py     --job_dir 
 
 
 
-<!--- cSpell:disable --->
-```shell
-```
-<!--- cSpell:enable --->
-
-<!--- cSpell:disable --->
-```shell
-```
-<!--- cSpell:enable --->
 
 
 <!--- cSpell:disable --->
