@@ -1185,7 +1185,94 @@ vscode ➜ /workspaces/mae (test_1) $ python submitit_pretrain.py     --job_dir 
 ```
 <!--- cSpell:enable --->
 
-With a batch size of 35713MiB of 46068MiB GPU memory
+Next attempt:
+
+<!--- cSpell:disable --->
+```shell
+With a batch size of 35713MiB of 46068MiB GPU memory (delta = 10355, 10.85GB)
+
+[12:17:02.656203] Epoch: [0]  [   0/5004]  eta: 7:05:17  lr: 0.000000  loss: 1.7199 (1.7199)  time: 5.0994  data: 2.1553  max mem: 30
+466
+[12:17:14.050369] Epoch: [0]  [  20/5004]  eta: 1:05:14  lr: 0.000000  loss: 1.7192 (1.7191)  time: 0.5696  data: 0.0003  max mem: 32
+981
+[10:44:18.763350] Epoch: [25]  [5003/5004]  eta: 0:00:00  lr: 0.000097  loss: 0.4570 (0.4544)  time: 0.6222  data: 0.0007  max mem: 32981
+[10:44:18.925743] Epoch: [25] Total time: 0:51:58 (0.6232 s / it)
+[10:44:18.926657] Averaged stats: lr: 0.000097  loss: 0.4570 (0.4544)
+[10:44:18.934925] log_dir: job
+Epoch: [26]  [   0/5004]  eta: 3:34:56  lr: 0.000097  loss: 0.4577 (0.4577)  time: 2.5771  data: 1.9640  max mem: 3
+2981
+Epoch: [26]  [ 700/5004]  eta: 0:44:48  lr: 0.000098  loss: 0.4519 (0.4539)  time: 0.6220  data: 0.0003  max mem: 32981
+Epoch: [26]  [ 840/5004]  eta: 0:43:18  lr: 0.000098  loss: 0.4538 (0.4536)  time: 0.6210  data: 0.0003  max mem: 32981
+Epoch: [31]  [ 840/5004]  eta: 0:43:23  lr: 0.000117  loss: 0.4470 (0.4484)  time: 0.6231  data: 0.0004  max mem: 32981
+Epoch: [55]  [1440/5004]  eta: 0:37:07  lr: 0.000150  loss: 0.4290 (0.4345)  time: 0.6244  data: 0.0004  max mem: 32981
+[07:48:40.603100] Epoch: [160]  [5003/5004]  eta: 0:00:00  lr: 0.000141  loss: 0.4273 (0.4235)  time: 0.6250  data: 0.0006  max mem: 32981
+[07:48:40.767198] Epoch: [160] Total time: 0:52:07 (0.6249 s / it)
+[07:48:40.767647] Averaged stats: lr: 0.000141  loss: 0.4273 (0.4235)
+```
+<!--- cSpell:enable --->
+
+Finished with an error that ot space is available:
+
+<!--- cSpell:disable --->
+```shell
+submitit ERROR (2024-04-28 07:48:48,638) - Could not dump error:
+[enforce fail at inline_container.cc:595] . unexpected pos 1622742592 vs 1622742484
+
+because of [Errno 28] No space left on device
+submitit ERROR (2024-04-28 07:48:48,638) - Submitted job triggered an exception
+```
+<!--- cSpell:enable --->
+
+We cab see that the cause is the dumping of the checkpoints:  
+
+<!--- cSpell:disable --->
+```shell
+ubuntu@cese-produtech3r:~/VSCodeProjects/mae$ pwd
+/home/ubuntu/VSCodeProjects/mae
+ubuntu@cese-produtech3r:~/VSCodeProjects/mae$ du -sh *
+4.0K	 extract_ILSVRC.sh 
+4.0K	CODE_OF_CONDUCT.md
+4.0K	CONTRIBUTING.md
+8.0K	FINETUNE.md
+20K	LICENSE
+4.0K	PRETRAIN.md
+56K	README.md
+32K	__pycache__
+12K	checkpoint
+3.9G	checkpoints
+4.0K	data
+1.1M	demo
+8.0K	engine_finetune.py
+4.0K	engine_pretrain.py
+80K	imagenet1k.md
+7.5M	imagenet1k_prep
+32G	job
+16K	main_finetune.py
+16K	main_linprobe.py
+12K	main_pretrain.py
+12K	models_mae.py
+4.0K	models_vit.py
+4.0K	output_dir
+4.0K	requirements.txt
+8.0K	submitit_finetune.py
+8.0K	submitit_linprobe.py
+8.0K	submitit_pretrain.py
+76K	util
+```
+<!--- cSpell:enable --->
+
+Each checkpoint has about 3.7 GB and is dumped every 20 epochs. At epoch 160, disk ran out. This also caused problems with the VSCode server - it was not possible to start a remote session due to [undeleted lock files](https://stackoverflow.com/questions/55979701/how-do-i-resolve-failed-to-parse-remote-port-from-server). Once removed, we can start a remote session again.
+
+The path used in `./job` is not in `def get_shared_folder() -> Path`. It ios defined in `save_model(args, epoch, model, model_without_ddp, optimizer, loss_scaler)`. The root is set by the command argument `args.output_dir`. The rate of logging is hard coded at `main_pretrain.py`:
+
+<!--- cSpell:disable --->
+```shell
+        if args.output_dir and (epoch % 20 == 0 or epoch + 1 == args.epochs):
+```
+<!--- cSpell:enable --->
+
+
+
 
 
 <!--- cSpell:disable --->
