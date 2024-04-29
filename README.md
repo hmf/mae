@@ -1271,8 +1271,36 @@ The path used in `./job` is not in `def get_shared_folder() -> Path`. It ios def
 ```
 <!--- cSpell:enable --->
 
+It seems like the `--job_dir` is used to set as follows: 
+
+<!--- cSpell:disable --->
+```shell
+    if args.job_dir == "":
+        args.job_dir = get_shared_folder() / "%j"
+```
+<!--- cSpell:enable --->
 
 
+which the `submitit` scripts then pass onto the `args.output_dir` folder:
+
+<!--- cSpell:disable --->
+```python
+    args.output_dir = args.job_dir
+```
+<!--- cSpell:enable --->
+
+To circumvent this issue we:
+
+1. Deleted the `./job` folder;
+1. Use the job folder `/mnt/data02/job`, which is a slow 1TB NFS folder. 
+
+
+<!--- cSpell:disable --->
+```shell
+vscode ➜ /workspaces/mae (test_1) $ python submitit_pretrain.py     --job_dir /mnt/data02/job     --nodes 1     --ngpus 1     --use_volta32     --batch_size 256     --model mae_vit_large_patch16     --norm_pix_loss     --mask_ratio 0.75     --epochs 800     --warmup_epochs 40     --blr 1.5e-4 --weight_decay 0.05     --data_path /mnt/data --timeout 43200
+13480
+```
+<!--- cSpell:enable --->
 
 
 <!--- cSpell:disable --->
